@@ -41,10 +41,11 @@ const posts = await getCollection('posts', ({ data }) => {
                   <img 
                     src={post.data.cover} 
                     alt={post.data.title}
-                    class="h-full w-full object-cover transition-all duration-300 group-hover:scale-105 opacity-0"
+                    class="h-full w-full object-cover transition-all duration-300 group-hover:scale-105 opacity-0 will-change-transform transform-gpu"
                     onload="this.style.opacity='1'"
                     onerror="this.onerror=null; this.src='/images/posts/placeholder.svg'; this.style.opacity='1';"
                     loading="lazy"
+                    decoding="async"
                   />
                 </div>
               )}
@@ -61,12 +62,12 @@ const posts = await getCollection('posts', ({ data }) => {
                   </div>
                 )}
                 
-                <!-- 文章标题 -->
-                <h3 class="text-md md:text-lg font-semibold leading-tight line-clamp-2 group-hover:text-primary transition-colors">
+                <!-- 文章标题 - 一行省略 -->
+                <h3 class="text-md md:text-lg font-semibold leading-tight line-clamp-1 group-hover:text-primary transition-colors mb-1">
                   {post.data.title}
                 </h3>
                 
-                <!-- 文章描述 -->
+                <!-- 文章描述 - 两行省略 -->
                 <p class="mt-1 text-sm text-muted-foreground line-clamp-2 flex-grow">
                   {post.data.description}
                 </p>
@@ -94,7 +95,7 @@ const posts = await getCollection('posts', ({ data }) => {
                   {post.data.tags && post.data.tags.length > 0 && (
                     <div class="flex gap-1">
                       {post.data.tags.slice(0, 1).map((tag) => (
-                        <span class="inline-flex items-center text-xs bg-muted px-1.5 py-0.5 rounded">
+                        <span class="inline-flex items-center text-xs bg-muted px-1.5 py-0.5 rounded line-clamp-1 max-w-[100px]">
                           {tag}
                         </span>
                       ))}

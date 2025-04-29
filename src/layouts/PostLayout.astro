@@ -116,9 +116,12 @@ const breadcrumbItems = [
         <img 
           src={cover} 
           alt={title}
-          class="w-full h-auto object-cover"
+          width="1200"
+          height="630"
+          class="w-full h-auto object-cover will-change-transform transform-gpu"
           onerror="this.onerror=null; this.src='/images/default-post.jpg';"
           loading="lazy"
+          decoding="async"
         />
       </div>
     )}
@@ -151,3 +154,26 @@ const breadcrumbItems = [
   <!-- 图片灯箱组件 -->
   <ImageLightbox client:load />
 </BaseLayout>
+
+<script>
+// 为文章内容中的图片添加优化属性
+document.addEventListener('astro:page-load', () => {
+  const articleImages = document.querySelectorAll('.prose img');
+  articleImages.forEach(img => {
+    if (img instanceof HTMLImageElement) {
+      // 添加 GPU 加速
+      img.classList.add('will-change-transform', 'transform-gpu');
+      
+      // 异步加载
+      img.setAttribute('loading', 'lazy');
+      img.setAttribute('decoding', 'async');
+      
+      // 确保有宽高比
+      if (!img.hasAttribute('width') && !img.hasAttribute('height')) {
+        img.setAttribute('width', '768');
+        img.setAttribute('height', '432');
+      }
+    }
+  });
+});
+</script>
