@@ -1,17 +1,17 @@
 {
   "name": "blog-site-config",
   "version": "1.0.0",
-  "description": "博客站点配置",
-  "siteName": "我的博客",
-  "siteDescription": "一个使用Astro、ShadcnUI和Tailwind CSS构建的现代化博客站点",
+  "description": "繁星点点博客站点配置",
+  "siteName": "繁星点点",
+  "siteDescription": "热爱技术与分享的博客作者",
   "siteUrl": "https://wwww.52013120.xyz",
   "language": "zh-CN",
   "logo": "/images/logo.svg",
   "favicon": "/favicon.ico",
   "socials": {
-    "github": "https://github.com/sky22333/myblog",
+    "github": "https://github.com/sky22333",
     "bilibili": "https://bilibili.com/",
-    "telegram": "https://t.me/",
+    "telegram": "https://t.me/good2233Bot",
     "youtube": "https://youtube.com/",
     "email": "example.com"
   },
@@ -68,14 +68,14 @@
       "tags": ["摄影", "旅行"]
     }
   ],
-  "footerAbout": "一个使用Astro、ShadcnUI和Tailwind CSS构建的现代化博客站点。",
-  "copyright": "© 2025 我的博客. 保留所有权利.",
+  "footerAbout": "一个分享网络知识的博客站点，欢迎来到繁星点点博客。转载请注明出处。",
+  "copyright": "© 2025 繁星点点. 保留所有权利.",
   "beian": {
     "text": "粤ICP备XXXXXXXX号",
     "url": "https://beian.miit.gov.cn/"
   },
   "author": {
-    "name": "博主",
+    "name": "繁星点点",
     "bio": "热爱技术与分享的博客作者",
     "avatar": "https://t.alcy.cc/moe?postId=15"
   },
@@ -97,7 +97,7 @@
       {"label": "头像", "value": "您的头像URL"},
       {"label": "描述", "value": "一句话描述您的网站"}
     ],
-    "contactText": "符合条件后，请通过邮件 {email} 或评论区与我联系。",
+    "contactText": "符合条件后，请通过TG与我联系。",
     "contactEmail": "example@example.com"
   }
 }
