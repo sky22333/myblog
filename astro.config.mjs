@@ -15,7 +15,7 @@ import rehypeAutolinkHeadings from 'rehype-autolink-headings';
 
 // https://astro.build/config
 export default defineConfig({
-  site: 'https://www.52013120.xyz', // 修复域名配置（去掉多余的w）
+  site: 'https://www.52013120.xyz',
   
   // 集成插件
   integrations: [
