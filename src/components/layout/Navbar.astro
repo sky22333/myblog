@@ -18,6 +18,13 @@ const navLinkClass = "transition-colors hover:text-foreground/80 text-foreground
 <header class="sticky top-0 z-40 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
   <div class="container flex h-16 items-center justify-between">
     <a href="/" class="flex items-center space-x-2">
+      {siteConfig.logo && 
+        <img 
+          src={siteConfig.logo} 
+          alt={`${siteConfig.siteName} Logo`} 
+          class="h-8 w-auto" 
+        />
+      }
       <span class="inline-block font-bold text-xl md:text-2xl">{siteConfig.siteName}</span>
     </a>
     

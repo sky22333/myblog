@@ -150,7 +150,9 @@ export const generateBlogPostStructuredData = (post: any, siteConfig: any) => {
       name: siteName,
       logo: {
         '@type': 'ImageObject',
-        url: `${siteUrl}/favicon.ico`,
+        url: `${siteUrl}${siteConfig.logo || '/favicon.ico'}`,
+        width: '60',
+        height: '60'
       },
     },
     mainEntityOfPage: {
