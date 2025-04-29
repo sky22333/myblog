@@ -1,0 +1,15 @@
+{
+  "rootSelector": "html",
+  "excludeSelectors": [
+    "nav",
+    "footer",
+    "[data-pagefind-ignore]"
+  ],
+  "indexes": [
+    {
+      "name": "posts",
+      "glob": "posts/**/*.html",
+      "language": "zh-cn"
+    }
+  ]
+} 

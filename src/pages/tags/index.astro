@@ -1,0 +1,67 @@
+---
+// 标签索引页面
+// 显示博客中所有可用的标签
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Navbar from '@/components/layout/Navbar.astro';
+import Footer from '@/components/layout/Footer.astro';
+import { getCollection } from 'astro:content';
+
+// 获取所有非草稿状态的文章
+const posts = await getCollection('posts', ({ data }) => !data.draft);
+
+// 从所有文章中提取标签
+const allTags = posts.flatMap(post => post.data.tags);
+
+// 计算每个标签的出现次数
+const tagCount = allTags.reduce((acc, tag) => {
+  acc[tag] = (acc[tag] || 0) + 1;
+  return acc;
+}, {} as Record<string, number>);
+
+// 对标签进行排序（按使用频率降序）
+const sortedTags = Object.entries(tagCount)
+  .sort(([, countA], [, countB]) => countB - countA)
+  .map(([tag, count]) => ({ tag, count }));
+---
+
+<BaseLayout title="文章标签" description="浏览所有文章标签">
+  <Navbar slot="header" />
+  
+  <section class="container py-10">
+    <div class="mb-8">
+      <h1 class="text-3xl font-bold tracking-tight mb-4">文章标签</h1>
+      <p class="text-lg text-muted-foreground">
+        共有 {sortedTags.length} 个标签
+      </p>
+    </div>
+    
+    <div class="grid gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+      {sortedTags.map(({ tag, count }) => (
+        <a 
+          href={`/tags/${tag}`}
+          class="flex flex-col items-center p-6 rounded-lg border bg-background hover:bg-muted/50 transition-colors"
+        >
+          <span class="text-xl font-semibold mb-2">{tag}</span>
+          <span class="text-sm text-muted-foreground">{count} 篇文章</span>
+        </a>
+      ))}
+    </div>
+    
+    {sortedTags.length === 0 && (
+      <div class="text-center py-10">
+        <p class="text-lg text-muted-foreground">暂无标签</p>
+      </div>
+    )}
+    
+    <div class="mt-10">
+      <a href="/posts" class="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="m15 18-6-6 6-6"></path>
+        </svg>
+        返回所有文章
+      </a>
+    </div>
+  </section>
+  
+  <Footer slot="footer" />
+</BaseLayout> 

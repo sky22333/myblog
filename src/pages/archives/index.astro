@@ -1,0 +1,197 @@
+---
+// 归档页面
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Navbar from '@/components/layout/Navbar.astro';
+import Footer from '@/components/layout/Footer.astro';
+import { getCollection } from 'astro:content';
+
+// 获取所有非草稿状态的文章
+const posts = await getCollection('posts', ({ data }) => {
+  return !data.draft;
+});
+
+// 按年份和月份归档文章
+const archiveMap = new Map();
+
+posts.forEach(post => {
+  const date = post.data.pubDate;
+  const year = date.getFullYear();
+  const month = date.getMonth() + 1;
+  
+  if (!archiveMap.has(year)) {
+    archiveMap.set(year, new Map());
+  }
+  
+  const yearMap = archiveMap.get(year);
+  if (!yearMap.has(month)) {
+    yearMap.set(month, []);
+  }
+  
+  yearMap.get(month).push(post);
+});
+
+// 转换为排序后的数组
+const archives = Array.from(archiveMap.entries())
+  .sort((a, b) => b[0] - a[0]) // 年份降序
+  .map(([year, monthMap]) => {
+    const months = Array.from(monthMap.entries())
+      .sort((a, b) => b[0] - a[0]) // 月份降序
+      .map(([month, posts]) => {
+        return {
+          month,
+          posts: posts.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()) // 文章按日期降序
+        };
+      });
+    
+    return {
+      year,
+      months
+    };
+  });
+
+// 统计总文章数
+const totalPosts = posts.length;
+
+// 获取月份名称
+function getMonthName(month) {
+  const monthNames = ["一月", "二月", "三月", "四月", "五月", "六月", "七月", "八月", "九月", "十月", "十一月", "十二月"];
+  return monthNames[month - 1];
+}
+---
+
+<BaseLayout title="归档">
+  <Navbar slot="header" />
+  
+  <section class="py-12 md:py-16">
+    <div class="container">
+      <div class="max-w-2xl mx-auto mb-12 text-center">
+        <h1 class="relative inline-block text-4xl font-bold tracking-tight mb-4">
+          <span class="relative z-10">文章归档</span>
+        </h1>
+        <p class="text-muted-foreground text-lg">总共收录了 <span class="font-semibold text-primary">{totalPosts}</span> 篇文章</p>
+      </div>
+      
+      <div class="max-w-4xl mx-auto">
+        {archives.map((yearData, yearIndex) => (
+          <div class="mb-16 last:mb-0 relative">
+            <!-- 年份标记 -->
+            <div class="sticky top-4 z-10 mb-8 flex justify-center">
+              <h2 class="inline-flex items-center justify-center text-2xl font-bold py-2 px-6 bg-background border-2 border-primary/60 rounded-full shadow-md">
+                <span class="text-primary mr-1.5">#</span>{yearData.year}
+              </h2>
+            </div>
+            
+            <!-- 月份和文章 -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+              {yearData.months.map((monthData, monthIndex) => (
+                <div class="col-span-1 ring-1 ring-border/30 bg-card rounded-xl overflow-hidden shadow-xl backdrop-blur-sm hover:shadow-lg transition-all duration-300">
+                  <!-- 月份标记 -->
+                  <div class="bg-primary/10 border-b border-b-primary/10 px-4 py-2.5 flex justify-between items-center">
+                    <h3 class="text-lg font-semibold text-primary flex items-center">
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-primary/70" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                      </svg>
+                      {getMonthName(monthData.month)}
+                    </h3>
+                    <span class="bg-primary/20 text-primary text-xs font-medium px-2.5 py-1 rounded-full">
+                      {monthData.posts.length} 篇
+                    </span>
+                  </div>
+                  
+                  <!-- 文章列表 -->
+                  <ul class="divide-y divide-border/30">
+                    {monthData.posts.map((post, postIndex) => (
+                      <li class="group">
+                        <a 
+                          href={`/posts/${post.slug}`}
+                          class="block p-4 hover:bg-muted/30 transition-colors"
+                        >
+                          <div class="flex items-start gap-3">
+                            <!-- 日期标记 -->
+                            <div class="flex-shrink-0 flex flex-col items-center justify-center w-12 h-12 bg-primary/5 text-primary rounded-lg overflow-hidden">
+                              <span class="text-xs font-medium">
+                                {post.data.pubDate.toLocaleDateString('zh-CN', {
+                                  month: 'short'
+                                })}
+                              </span>
+                              <span class="text-xl font-bold leading-none">
+                                {post.data.pubDate.getDate()}
+                              </span>
+                            </div>
+                            
+                            <div class="flex-1 min-w-0">
+                              <!-- 文章标题 -->
+                              <h4 class="text-base font-medium text-foreground group-hover:text-primary transition-colors line-clamp-1">
+                                {post.data.title}
+                              </h4>
+                              
+                              <!-- 文章标签 -->
+                              {post.data.tags && post.data.tags.length > 0 && (
+                                <div class="flex flex-wrap gap-1.5 mt-2">
+                                  {post.data.tags.slice(0, 3).map((tag) => (
+                                    <span class="inline-flex items-center text-xs text-muted-foreground">
+                                      <span class="h-1.5 w-1.5 rounded-full bg-primary/70 mr-1"></span>
+                                      {tag}
+                                    </span>
+                                  ))}
+                                  {post.data.tags.length > 3 && (
+                                    <span class="text-xs text-muted-foreground">
+                                      +{post.data.tags.length - 3}
+                                    </span>
+                                  )}
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+  
+  <Footer slot="footer" />
+</BaseLayout>
+
+<style>
+  /* 淡入动画 */
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  
+  /* 缩放动画 */
+  @keyframes zoomIn {
+    from { opacity: 0; transform: scale(0.95); }
+    to { opacity: 1; transform: scale(1); }
+  }
+  
+  /* 应用动画到月份卡片 */
+  .col-span-1 {
+    animation: zoomIn 0.5s ease-out backwards;
+  }
+  
+  .col-span-1:nth-child(1) { animation-delay: 0.1s; }
+  .col-span-1:nth-child(2) { animation-delay: 0.2s; }
+  .col-span-1:nth-child(3) { animation-delay: 0.3s; }
+  .col-span-1:nth-child(4) { animation-delay: 0.4s; }
+  .col-span-1:nth-child(n+5) { animation-delay: 0.5s; }
+  
+  /* 应用动画到文章列表项 */
+  li {
+    animation: fadeIn 0.4s ease-out backwards;
+  }
+  
+  li:nth-child(1) { animation-delay: 0.1s; }
+  li:nth-child(2) { animation-delay: 0.15s; }
+  li:nth-child(3) { animation-delay: 0.2s; }
+  li:nth-child(4) { animation-delay: 0.25s; }
+  li:nth-child(5) { animation-delay: 0.3s; }
+  li:nth-child(n+6) { animation-delay: 0.35s; }
+</style>

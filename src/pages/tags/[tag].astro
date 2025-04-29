@@ -1,0 +1,137 @@
+---
+// 标签详情页面
+// 显示特定标签的所有文章
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Navbar from '@/components/layout/Navbar.astro';
+import Footer from '@/components/layout/Footer.astro';
+import { getCollection } from 'astro:content';
+
+// 获取URL参数中的标签
+export async function getStaticPaths() {
+  const posts = await getCollection('posts', ({ data }) => !data.draft);
+  
+  // 从所有文章中提取唯一的标签
+  const uniqueTags = [...new Set(posts.flatMap(post => post.data.tags))];
+  
+  // 为每个标签创建一个路径
+  return uniqueTags.map(tag => ({
+    params: { tag },
+    props: { tag },
+  }));
+}
+
+const { tag } = Astro.props;
+
+// 获取包含当前标签的所有文章
+const posts = await getCollection('posts', ({ data }) => {
+  return !data.draft && data.tags.includes(tag);
+});
+
+// 按日期排序（从新到旧）
+posts.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+---
+
+<BaseLayout title={`标签: ${tag}`} description={`包含"${tag}"标签的所有文章`}>
+  <Navbar slot="header" />
+  
+  <section class="container py-10">
+    <div class="mb-8">
+      <h1 class="text-3xl font-bold tracking-tight mb-4">标签: {tag}</h1>
+      <p class="text-lg text-muted-foreground">
+        找到 {posts.length} 篇含有"{tag}"标签的文章
+      </p>
+    </div>
+    
+    <div class="space-y-8">
+      {posts.length > 0 ? (
+        <div class="grid gap-6">
+          {posts.map((post) => (
+            <a href={`/posts/${post.slug}`} class="group">
+              <div class="relative overflow-hidden rounded-lg border bg-background p-5 transition-all hover:shadow-md">
+                <div class="flex flex-col md:flex-row md:items-start gap-4">
+                  {/* 文章封面图（如果存在） */}
+                  {post.data.cover && (
+                    <div class="md:w-1/4 aspect-video overflow-hidden rounded-md">
+                      <img 
+                        src={post.data.cover} 
+                        alt={post.data.title}
+                        class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                        onerror="this.onerror=null; this.src='/images/default-post.jpg';"
+                      />
+                    </div>
+                  )}
+                  
+                  {/* 文章内容 */}
+                  <div class={post.data.cover ? "md:w-3/4" : "w-full"}>
+                    {/* 文章标题 */}
+                    <h2 class="text-xl font-semibold leading-tight line-clamp-2 group-hover:text-primary transition-colors">
+                      {post.data.title}
+                    </h2>
+                    
+                    {/* 文章描述 */}
+                    <p class="mt-2 text-muted-foreground line-clamp-2">
+                      {post.data.description}
+                    </p>
+                    
+                    {/* 文章元数据 */}
+                    <div class="mt-4 flex items-center text-xs text-muted-foreground">
+                      <time datetime={post.data.pubDate.toISOString()}>
+                        {post.data.pubDate.toLocaleDateString('zh-CN', {
+                          year: 'numeric',
+                          month: 'long',
+                          day: 'numeric'
+                        })}
+                      </time>
+                      
+                      {post.data.readingTime && (
+                        <>
+                          <span class="mx-2">•</span>
+                          <span>{post.data.readingTime} 分钟阅读</span>
+                        </>
+                      )}
+                    </div>
+                    
+                    {/* 文章标签 */}
+                    {post.data.tags && post.data.tags.length > 0 && (
+                      <div class="mt-3 flex flex-wrap gap-2">
+                        {post.data.tags.map((postTag) => (
+                          <span class={`inline-flex items-center text-xs px-2 py-1 rounded-md ${
+                            postTag === tag 
+                              ? "bg-primary/10 text-primary" 
+                              : "bg-muted text-muted-foreground"
+                          }`}>
+                            {postTag}
+                          </span>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </a>
+          ))}
+        </div>
+      ) : (
+        <div class="text-center py-10">
+          <p class="text-lg text-muted-foreground">没有找到含有"{tag}"标签的文章</p>
+          <div class="mt-4">
+            <a href="/posts" class="inline-flex items-center justify-center rounded-md bg-primary px-6 py-2 text-sm font-medium text-primary-foreground shadow transition-colors hover:bg-primary/90">
+              浏览全部文章
+            </a>
+          </div>
+        </div>
+      )}
+    </div>
+    
+    <div class="mt-10">
+      <a href="/posts" class="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="m15 18-6-6 6-6"></path>
+        </svg>
+        返回所有文章
+      </a>
+    </div>
+  </section>
+  
+  <Footer slot="footer" />
+</BaseLayout> 

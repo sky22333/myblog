@@ -1,0 +1,166 @@
+---
+// 友链页面
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Navbar from '@/components/layout/Navbar.astro';
+import Footer from '@/components/layout/Footer.astro';
+import { getSiteConfig } from '@/lib/config';
+
+// 获取站点配置
+const siteConfig = getSiteConfig();
+// 从配置文件获取友链数据
+const friends = siteConfig.friendLinks;
+
+// 页面头图
+const headerImage = "/images/friends-header.jpg";
+---
+
+<BaseLayout title={siteConfig.friendsPageSettings.title}>
+  <Navbar slot="header" />
+  
+  <section class="pt-12 pb-16 md:pt-16 md:pb-20">
+    <div class="container max-w-5xl">
+      <!-- 页面标题和介绍 -->
+      <div class="max-w-2xl mx-auto mb-12 text-center">
+        <h1 class="relative inline-block text-4xl font-bold tracking-tight mb-4">
+          <span class="relative z-10">{siteConfig.friendsPageSettings.title}</span>
+        </h1>
+        <p class="text-muted-foreground text-lg">{siteConfig.friendsPageSettings.description}</p>
+      </div>
+      
+      <!-- 友链卡片网格，改为每行4个卡片 -->
+      <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-5">
+        {friends.map(friend => (
+          <a 
+            href={friend.url} 
+            target="_blank" 
+            rel="noopener noreferrer"
+            class="group relative rounded-lg border bg-card shadow-sm overflow-hidden transition-all duration-300 hover:shadow-md hover:-translate-y-1 hover:border-primary/30"
+          >
+            <div class="p-4">
+              <div class="flex items-center mb-3">
+                <div class="h-10 w-10 rounded-full overflow-hidden ring-1 ring-border/50 transition-all duration-300 group-hover:ring-primary/30 mr-3 flex-shrink-0">
+                  <img 
+                    src={friend.avatar} 
+                    alt={friend.name}
+                    class="h-full w-full object-cover"
+                    loading="lazy"
+                    onerror="this.src='https://api.dicebear.com/6.x/identicon/svg?seed=fallback'"
+                  />
+                </div>
+                
+                <div class="flex-1 min-w-0">
+                  <h3 class="text-base font-medium truncate group-hover:text-primary transition-colors">{friend.name}</h3>
+                </div>
+              </div>
+              
+              <p class="text-xs text-muted-foreground line-clamp-2 mb-2 h-8">{friend.description}</p>
+              
+              {friend.tags && (
+                <div class="flex flex-wrap gap-1.5">
+                  {friend.tags.slice(0, 2).map(tag => (
+                    <span class="inline-flex items-center text-[10px] rounded-full px-2 py-0.5 bg-muted/70 text-muted-foreground">
+                      {tag}
+                    </span>
+                  ))}
+                  {friend.tags.length > 2 && (
+                    <span class="inline-flex items-center text-[10px] rounded-full px-2 py-0.5 bg-muted/70 text-muted-foreground">
+                      +{friend.tags.length - 2}
+                    </span>
+                  )}
+                </div>
+              )}
+              
+              <!-- 访问提示 -->
+              <div class="absolute right-2 top-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                <span class="text-[10px] text-muted-foreground bg-background/80 rounded-full px-2 py-0.5 flex items-center shadow-sm">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-0.5">
+                    <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                    <polyline points="15 3 21 3 21 9"></polyline>
+                    <line x1="10" y1="14" x2="21" y2="3"></line>
+                  </svg>
+                  访问
+                </span>
+              </div>
+            </div>
+          </a>
+        ))}
+      </div>
+      
+      <!-- 申请友链规则 -->
+      <div id="apply-section" class="mt-16 p-6 md:p-8 rounded-xl border bg-card/70 backdrop-blur-sm">
+        <h2 class="text-2xl font-semibold mb-5 flex items-center">
+          <span class="inline-block mr-3 w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-primary"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M22 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+          </span>
+          {siteConfig.friendsPageSettings.applyTitle}
+        </h2>
+        
+        <div class="space-y-5">
+          <p class="text-muted-foreground">
+            {siteConfig.friendsPageSettings.applyDescription}
+          </p>
+          
+          <div class="grid gap-3 sm:grid-cols-2">
+            {siteConfig.friendsPageSettings.applyConditions.map(condition => (
+              <div class="flex items-start space-x-3 rounded-lg p-3 bg-muted/50">
+                <div class="mt-0.5 text-primary">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"></path><path d="m9 12 2 2 4-4"></path></svg>
+                </div>
+                <p class="text-sm">{condition}</p>
+              </div>
+            ))}
+          </div>
+          
+          <div class="mt-5 p-4 rounded-lg bg-primary/5 border border-primary/10">
+            <h3 class="text-sm font-medium mb-2">{siteConfig.friendsPageSettings.applyInfoTitle}</h3>
+            <div class="grid gap-2 sm:grid-cols-2">
+              {siteConfig.friendsPageSettings.applyInfoItems.map(item => (
+                <div class="flex items-center space-x-2 text-sm text-muted-foreground">
+                  <span class="font-medium">{item.label}：</span>
+                  <span>{item.value}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+          
+          <p class="text-sm text-muted-foreground">
+            {siteConfig.friendsPageSettings.contactText}
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+  
+  <Footer slot="footer" />
+</BaseLayout>
+
+<style>
+  /* 友链卡片悬停效果 */
+  @keyframes pulse-border {
+    0% { border-color: transparent; }
+    50% { border-color: hsl(var(--primary) / 0.3); }
+    100% { border-color: transparent; }
+  }
+  
+  /* 滚动平滑 */
+  html {
+    scroll-behavior: smooth;
+  }
+  
+  /* 简单的入场动画 */
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  
+  .grid > a {
+    animation: fadeIn 0.5s ease-out backwards;
+  }
+  
+  .grid > a:nth-child(1) { animation-delay: 0.05s; }
+  .grid > a:nth-child(2) { animation-delay: 0.1s; }
+  .grid > a:nth-child(3) { animation-delay: 0.15s; }
+  .grid > a:nth-child(4) { animation-delay: 0.2s; }
+  .grid > a:nth-child(5) { animation-delay: 0.25s; }
+  .grid > a:nth-child(n+6) { animation-delay: 0.3s; }
+</style>

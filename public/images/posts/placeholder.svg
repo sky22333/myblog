@@ -1,0 +1,6 @@
+<svg width="400" height="300" xmlns="http://www.w3.org/2000/svg">
+  <rect width="400" height="300" fill="#f1f5f9" fill-opacity="0.5" />
+  <path d="M160,125 L240,125 L240,175 L160,175 Z" fill="#cbd5e1" fill-opacity="0.5" />
+  <path d="M185,150 a15,15 0 1,0 30,0 a15,15 0 1,0 -30,0" fill="#94a3b8" fill-opacity="0.5" />
+  <path d="M160,175 L185,150 L215,160 L240,140 L240,175 Z" fill="#94a3b8" fill-opacity="0.5" />
+</svg> 

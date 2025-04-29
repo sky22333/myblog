@@ -1,0 +1,103 @@
+{
+  "name": "blog-site-config",
+  "version": "1.0.0",
+  "description": "博客站点配置",
+  "siteName": "我的博客",
+  "siteDescription": "一个使用Astro、ShadcnUI和Tailwind CSS构建的现代化博客站点",
+  "siteUrl": "https://wwww.52013120.xyz",
+  "language": "zh-CN",
+  "logo": "/images/logo.svg",
+  "favicon": "/favicon.ico",
+  "socials": {
+    "github": "https://github.com/sky22333/myblog",
+    "bilibili": "https://bilibili.com/",
+    "telegram": "https://t.me/",
+    "youtube": "https://youtube.com/",
+    "email": "example.com"
+  },
+  "navItems": [
+    {
+      "title": "首页",
+      "url": "/"
+    },
+    {
+      "title": "文章",
+      "url": "/posts"
+    },
+    {
+      "title": "归档",
+      "url": "/archives"
+    },
+    {
+      "title": "友链",
+      "url": "/friends"
+    },
+    {
+      "title": "关于",
+      "url": "/about"
+    }
+  ],
+  "postsPerPage": 12,
+  "friendLinks": [
+    {
+      "name": "示例友链1",
+      "url": "https://example1.com",
+      "description": "友链1描述",
+      "avatar": "https://t.alcy.cc/moe?postId=15",
+      "tags": ["前端", "技术"]
+    },
+    {
+      "name": "示例友链2",
+      "url": "https://example2.com",
+      "description": "友链2描述",
+      "avatar": "https://t.alcy.cc/moe?postId=15",
+      "tags": ["设计", "博客"]
+    },
+    {
+      "name": "示例博客3",
+      "url": "https://example3.com",
+      "avatar": "https://api.dicebear.com/6.x/identicon/svg?seed=example3",
+      "description": "第三个示例博客站点",
+      "tags": ["后端", "算法"]
+    },
+    {
+      "name": "示例博客4",
+      "url": "https://example4.com",
+      "avatar": "https://api.dicebear.com/6.x/identicon/svg?seed=example4",
+      "description": "第四个示例博客站点",
+      "tags": ["摄影", "旅行"]
+    }
+  ],
+  "footerAbout": "一个使用Astro、ShadcnUI和Tailwind CSS构建的现代化博客站点。",
+  "copyright": "© 2025 我的博客. 保留所有权利.",
+  "beian": {
+    "text": "粤ICP备XXXXXXXX号",
+    "url": "https://beian.miit.gov.cn/"
+  },
+  "author": {
+    "name": "博主",
+    "bio": "热爱技术与分享的博客作者",
+    "avatar": "https://t.alcy.cc/moe?postId=15"
+  },
+  "friendsPageSettings": {
+    "title": "友情链接",
+    "description": "感谢这些优秀的创作者们，他们的分享让互联网更加精彩。欢迎常来坐坐！",
+    "applyTitle": "申请友链",
+    "applyDescription": "如果您想与我交换友链，请确保您的网站符合以下条件：",
+    "applyConditions": [
+      "网站内容健康，无违法内容",
+      "网站能够正常访问，加载速度合理",
+      "网站有原创内容，且定期更新",
+      "已经添加了本站的友链"
+    ],
+    "applyInfoTitle": "请提供以下信息：",
+    "applyInfoItems": [
+      {"label": "名称", "value": "您的网站名称"},
+      {"label": "链接", "value": "您的网站URL"},
+      {"label": "头像", "value": "您的头像URL"},
+      {"label": "描述", "value": "一句话描述您的网站"}
+    ],
+    "contactText": "符合条件后，请通过邮件 {email} 或评论区与我联系。",
+    "contactEmail": "example@example.com"
+  }
+}

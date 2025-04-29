@@ -1,0 +1,113 @@
+---
+// 文章列表页面
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Navbar from '@/components/layout/Navbar.astro';
+import Footer from '@/components/layout/Footer.astro';
+import { getCollection } from 'astro:content';
+
+// 获取所有非草稿状态的文章，并按照日期排序
+const posts = await getCollection('posts', ({ data }) => {
+  return !data.draft;
+}).then(posts => 
+  posts.sort((a, b) => {
+    // 首先按照置顶状态排序
+    if (a.data.featured && !b.data.featured) return -1;
+    if (!a.data.featured && b.data.featured) return 1;
+    
+    // 然后按照发布日期排序（从新到旧）
+    return b.data.pubDate.valueOf() - a.data.pubDate.valueOf();
+  })
+);
+---
+
+<BaseLayout title="文章列表">
+  <Navbar slot="header" />
+  
+  <section class="py-12 md:py-16">
+    <div class="container">
+      <div class="max-w-2xl mx-auto mb-12 text-center">
+        <h1 class="relative inline-block text-4xl font-bold tracking-tight mb-4">
+          <span class="relative z-10">所有文章</span>
+        </h1>
+      </div>
+      
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        {posts.map((post) => (
+          <a href={`/posts/${post.slug}`} class="group">
+            <div class="relative overflow-hidden rounded-lg border bg-background transition-all hover:shadow-md h-[300px] flex flex-col">
+              <!-- 文章封面图 -->
+              {post.data.cover && (
+                <div class="aspect-video overflow-hidden bg-muted/30">
+                  <img 
+                    src={post.data.cover} 
+                    alt={post.data.title}
+                    class="h-full w-full object-cover transition-all duration-300 group-hover:scale-105 opacity-0"
+                    onload="this.style.opacity='1'"
+                    onerror="this.onerror=null; this.src='/images/posts/placeholder.svg'; this.style.opacity='1';"
+                    loading="lazy"
+                  />
+                </div>
+              )}
+              
+              <!-- 文章内容 -->
+              <div class="p-2.5 flex flex-col flex-grow">
+                <!-- 置顶标识 -->
+                {post.data.featured && (
+                  <div class="absolute top-0 right-0 bg-secondary text-secondary-foreground text-xs md:text-sm font-medium px-2.5 py-1 rounded-bl-md flex items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-1.5">
+                      <path d="M19 8.71 13.29 3h-2.59L5 8.71l5.29 5.29L9 19h6l-1.29-5L19 8.71z"></path>
+                    </svg>
+                    精选
+                  </div>
+                )}
+                
+                <!-- 文章标题 -->
+                <h3 class="text-md md:text-lg font-semibold leading-tight line-clamp-2 group-hover:text-primary transition-colors">
+                  {post.data.title}
+                </h3>
+                
+                <!-- 文章描述 -->
+                <p class="mt-1 text-sm text-muted-foreground line-clamp-2 flex-grow">
+                  {post.data.description}
+                </p>
+                
+                <!-- 文章元数据和标签合并为一行 -->
+                <div class="flex items-center justify-between text-xs mt-1.5">
+                  <div class="text-muted-foreground">
+                    <time datetime={post.data.pubDate.toISOString()}>
+                      {post.data.pubDate.toLocaleDateString('zh-CN', {
+                        year: 'numeric',
+                        month: 'short',
+                        day: 'numeric'
+                      })}
+                    </time>
+                    
+                    {post.data.readingTime && (
+                      <>
+                        <span class="mx-1">•</span>
+                        <span>{post.data.readingTime}分钟</span>
+                      </>
+                    )}
+                  </div>
+                  
+                  <!-- 文章标签 -->
+                  {post.data.tags && post.data.tags.length > 0 && (
+                    <div class="flex gap-1">
+                      {post.data.tags.slice(0, 1).map((tag) => (
+                        <span class="inline-flex items-center text-xs bg-muted px-1.5 py-0.5 rounded">
+                          {tag}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+  
+  <Footer slot="footer" />
+</BaseLayout>

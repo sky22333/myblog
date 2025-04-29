@@ -1,0 +1,52 @@
+---
+// 面包屑导航组件
+// 用于提供页面层级导航和结构化数据支持
+import { getSiteConfig } from '@/lib/config';
+import { generateBreadcrumbStructuredData } from '@/lib/seo';
+import { FaChevronRight } from 'react-icons/fa';
+
+interface BreadcrumbItem {
+  name: string;
+  url: string;
+  current?: boolean;
+}
+
+interface Props {
+  items: BreadcrumbItem[];
+  className?: string;
+}
+
+const { items, className = "" } = Astro.props;
+const siteConfig = getSiteConfig();
+
+// 生成面包屑的结构化数据
+const breadcrumbData = generateBreadcrumbStructuredData(items, siteConfig.siteUrl);
+---
+
+<nav aria-label="面包屑导航" class={`flex flex-wrap items-center space-x-1 text-sm ${className}`}>
+  <ol class="flex items-center flex-wrap space-x-1 text-sm">
+    {items.map((item, index) => (
+      <li class="flex items-center">
+        {index > 0 && (
+          <FaChevronRight size={10} className="mx-1.5 text-muted-foreground" />
+        )}
+        
+        {item.current ? (
+          <span aria-current="page" class="font-medium text-foreground">
+            {item.name}
+          </span>
+        ) : (
+          <a
+            href={item.url}
+            class="text-muted-foreground hover:text-foreground transition-colors"
+          >
+            {item.name}
+          </a>
+        )}
+      </li>
+    ))}
+  </ol>
+</nav>
+
+<!-- 结构化数据 -->
+<script type="application/ld+json" set:html={JSON.stringify(breadcrumbData)} /> 

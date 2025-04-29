@@ -1,0 +1,52 @@
+---
+// 页脚组件
+// 包含版权信息和社交媒体链接
+import { getSiteConfig } from '@/lib/config';
+
+const siteConfig = getSiteConfig();
+const socialMedia = siteConfig.getSocialMedia();
+---
+
+<footer class="border-t bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+  <div class="container py-8 md:py-12">
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-8">
+      <div class="flex flex-col space-y-2">
+        <h3 class="font-medium text-lg">关于博客</h3>
+        <p class="text-sm text-muted-foreground">
+          {siteConfig.footerAbout}
+        </p>
+      </div>
+      
+      <div class="flex flex-col space-y-2 sm:col-span-1">
+        <div class="flex flex-wrap gap-4 justify-end">
+          {socialMedia.map(({ platform, url, icon: Icon }) => (
+            Icon && (
+              <a 
+                href={platform === 'email' ? `mailto:${url}` : url} 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                class="text-muted-foreground hover:text-foreground"
+                title={platform}
+              >
+                <Icon size={24} />
+              </a>
+            )
+          ))}
+        </div>
+      </div>
+    </div>
+    
+    <div class="mt-8 border-t pt-6 text-center">
+      <p class="text-sm text-muted-foreground">
+        {siteConfig.copyright}
+      </p>
+      {siteConfig.beian && (
+        <p class="text-xs text-muted-foreground mt-2">
+          <a href={siteConfig.beian.url} target="_blank" rel="noopener noreferrer" class="hover:text-foreground transition-colors">
+            {siteConfig.beian.text}
+          </a>
+        </p>
+      )}
+    </div>
+  </div>
+</footer>

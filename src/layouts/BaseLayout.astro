@@ -1,0 +1,184 @@
+---
+// 基础布局组件，用于包装所有页面
+import { ViewTransitions } from 'astro:transitions';
+import '../styles/global.css';
+import BackToTop from '@/components/ui/back-to-top/BackToTop';
+import { getSiteConfig } from '@/lib/config';
+import { generateWebSiteStructuredData, generateBlogPostStructuredData } from '@/lib/seo';
+
+interface Props {
+  title?: string;
+  description?: string;
+  image?: string;
+  article?: boolean;
+  post?: any; // 文章数据，用于博客文章页面
+  keywords?: string[];
+  structuredData?: Record<string, any>; // 自定义结构化数据
+}
+
+// 从props中获取页面元数据，如果没有提供则使用默认值
+const { 
+  title = "我的博客", 
+  description = "一个现代化的个人博客站点", 
+  image = "/favicon.svg",
+  article = false,
+  post = null,
+  keywords = [],
+  structuredData = null
+} = Astro.props;
+
+// 获取站点配置
+const siteConfig = getSiteConfig();
+
+// 构建完整的页面标题
+const pageTitle = title ? `${title} | ${siteConfig.siteName}` : siteConfig.siteName;
+
+// 生成适当的结构化数据
+let pageStructuredData = structuredData;
+if (!pageStructuredData) {
+  if (article && post) {
+    // 如果是文章页面且提供了文章数据，生成文章结构化数据
+    pageStructuredData = generateBlogPostStructuredData(post, siteConfig);
+  } else {
+    // 否则生成网站结构化数据
+    pageStructuredData = generateWebSiteStructuredData(siteConfig);
+  }
+}
+---
+
+<!DOCTYPE html>
+<html lang={siteConfig.language || "zh-CN"}>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/svg+xml" href={siteConfig.favicon || "/favicon.svg"} />
+    
+    <!-- 基本元数据 -->
+    <title>{pageTitle}</title>
+    <meta name="description" content={description} />
+    {keywords.length > 0 && <meta name="keywords" content={keywords.join(",")} />}
+    
+    <!-- 规范链接 - 防止重复内容问题 -->
+    <link rel="canonical" href={new URL(Astro.url.pathname, Astro.site).toString()} />
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content={article ? "article" : "website"} />
+    <meta property="og:url" content={Astro.url} />
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={new URL(image, Astro.site)} />
+    
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:url" content={Astro.url} />
+    <meta property="twitter:title" content={pageTitle} />
+    <meta property="twitter:description" content={description} />
+    <meta property="twitter:image" content={new URL(image, Astro.site)} />
+    
+    <!-- Pagefind 搜索资源 - 实现懒加载 -->
+    <script is:inline>
+      // 懒加载CSS和JS
+      const loadPagefindResources = () => {
+        // 如果已加载，无需重复加载
+        if (document.querySelector('#pagefind-css') || window.pagefind) return;
+        
+        // 懒加载CSS
+        const link = document.createElement('link');
+        link.id = 'pagefind-css';
+        link.rel = 'stylesheet';
+        link.href = '/pagefind/pagefind-ui.css';
+        document.head.appendChild(link);
+        
+        // 懒加载JS
+        import('/pagefind/pagefind.js')
+          .then(module => {
+            window.pagefind = module;
+            if (typeof module.init === 'function') {
+              module.init();
+            }
+          })
+          .catch(err => console.warn('Pagefind 加载失败:', err));
+      };
+      
+      // 延迟加载或用户交互时加载
+      if (window.location.pathname.includes('/search')) {
+        // 在搜索页面立即加载
+        loadPagefindResources();
+      } else {
+        // 其他页面监听用户交互或按需加载
+        const loadTrigger = () => {
+          loadPagefindResources();
+          // 加载后移除事件监听
+          document.removeEventListener('click', loadTrigger);
+        };
+        
+        // 监听相关事件触发加载
+        document.addEventListener('click', e => {
+          const target = e.target;
+          if (
+            target instanceof HTMLElement && 
+            (target.closest('a[href="/search"]') || target.closest('button[aria-label="搜索"]'))
+          ) {
+            loadTrigger();
+          }
+        });
+        
+        // 监听键盘快捷键 '/'
+        document.addEventListener('keydown', e => {
+          if (e.key === '/' && 
+              !(e.target instanceof HTMLInputElement) && 
+              !(e.target instanceof HTMLTextAreaElement)) {
+            loadTrigger();
+          }
+        });
+      }
+    </script>
+    
+    <!-- 结构化数据 -->
+    <script type="application/ld+json" set:html={JSON.stringify(pageStructuredData)} />
+    
+    <!-- 启用视图过渡动画 -->
+    <ViewTransitions />
+    
+    <!-- 其他头部内容 -->
+    <slot name="head" />
+  </head>
+  <body class="min-h-screen bg-background font-sans antialiased">
+    <!-- 主题脚本，确保在页面加载前执行，防止闪烁 -->
+    <script is:inline>
+      const theme = (() => {
+        if (typeof localStorage !== 'undefined' && localStorage.getItem('theme')) {
+          return localStorage.getItem('theme');
+        }
+        if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+          return 'dark';
+        }
+        return 'light';
+      })();
+      
+      if (theme === 'light') {
+        document.documentElement.classList.remove('dark');
+      } else {
+        document.documentElement.classList.add('dark');
+      }
+      
+      window.localStorage.setItem('theme', theme);
+    </script>
+    
+    <div class="relative flex min-h-screen flex-col">
+      <!-- 导航栏将在这里插入 -->
+      <slot name="header" />
+      
+      <!-- 主要内容 -->
+      <main class="flex-1">
+        <slot />
+      </main>
+      
+      <!-- 页脚将在这里插入 -->
+      <slot name="footer" />
+      
+      <!-- 回到顶部按钮 -->
+      <BackToTop client:load />
+    </div>
+  </body>
+</html>

@@ -1,0 +1,148 @@
+---
+// 关于页面布局组件
+// 用于显示博客的关于页面
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Navbar from '@/components/layout/Navbar.astro';
+import Footer from '@/components/layout/Footer.astro';
+import { Card, CardContent } from '@/components/ui/card/Card';
+
+interface Props {
+  title: string;
+  description?: string;
+  authorName?: string;
+  authorAvatar?: string;
+  authorBio?: string;
+  authorSocials?: Record<string, string>;
+}
+
+const { 
+  title = "关于", 
+  description = "关于博客和博主的介绍", 
+  authorName = "博主",
+  authorAvatar = "/images/authors/default-avatar.png",
+  authorBio = "热爱技术与分享的博客作者",
+  authorSocials = {}
+} = Astro.props;
+---
+
+<BaseLayout title={title} description={description}>
+  <Navbar slot="header" />
+  
+  <main class="container py-10">
+    <header class="mb-10 text-center">
+      <h1 class="text-3xl md:text-4xl font-bold tracking-tight mb-4">{title}</h1>
+      {description && <p class="text-xl text-muted-foreground">{description}</p>}
+    </header>
+    
+    <div class="max-w-3xl mx-auto">
+      <!-- 作者信息 -->
+      <Card className="mb-10">
+        <CardContent className="p-6">
+          <div class="flex flex-col md:flex-row md:items-center gap-6">
+            <div class="flex-shrink-0">
+              <img 
+                src={authorAvatar} 
+                alt={authorName}
+                class="w-32 h-32 rounded-full object-cover mx-auto md:mx-0"
+              />
+            </div>
+            <div class="text-center md:text-left">
+              <h2 class="text-2xl font-bold">{authorName}</h2>
+              <p class="mt-2 text-muted-foreground">{authorBio}</p>
+              
+              <!-- 社交媒体链接 -->
+              {Object.keys(authorSocials).length > 0 && (
+                <div class="mt-4 flex flex-wrap justify-center md:justify-start gap-4">
+                  {authorSocials.github && (
+                    <a 
+                      href={authorSocials.github}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      class="text-muted-foreground hover:text-foreground transition-colors"
+                      aria-label="GitHub"
+                      title="GitHub"
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4"></path>
+                        <path d="M9 18c-4.51 2-5-2-7-2"></path>
+                      </svg>
+                    </a>
+                  )}
+                  
+                  {authorSocials.bilibili && (
+                    <a 
+                      href={authorSocials.bilibili}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      class="text-muted-foreground hover:text-foreground transition-colors"
+                      aria-label="哔哩哔哩"
+                      title="哔哩哔哩"
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M17.813 4.653h.854c1.51.054 2.769.578 3.773 1.574 1.004.995 1.524 2.249 1.56 3.76v7.36c-.036 1.51-.556 2.769-1.56 3.773s-2.262 1.524-3.773 1.56H5.333c-1.51-.036-2.769-.556-3.773-1.56S.036 18.858 0 17.347v-7.36c.036-1.511.556-2.765 1.56-3.76 1.004-.996 2.262-1.52 3.773-1.574h.774l-1.174-1.12a1.234 1.234 0 0 1-.373-.906c0-.356.124-.658.373-.907l.027-.027c.267-.249.573-.373.92-.373.347 0 .653.124.92.373L9.653 4.44c.071.071.134.142.187.213h4.267a.836.836 0 0 1 .16-.213l2.853-2.747c.267-.249.573-.373.92-.373.347 0 .662.151.929.4.267.249.391.551.391.907 0 .355-.124.657-.373.906L17.813 4.653zM5.333 7.24c-.746.018-1.373.276-1.88.773-.506.498-.769 1.13-.786 1.894v7.52c.017.764.28 1.395.786 1.893.507.498 1.134.756 1.88.773h13.334c.746-.017 1.373-.275 1.88-.773.506-.498.769-1.129.786-1.893v-7.52c-.017-.765-.28-1.396-.786-1.894-.507-.497-1.134-.755-1.88-.773H5.333zM8 11.107c.373 0 .684.124.933.373.25.249.383.569.4.96v1.173c-.017.391-.15.711-.4.96-.249.25-.56.374-.933.374s-.684-.125-.933-.374c-.25-.249-.383-.569-.4-.96V12.44c.017-.391.15-.711.4-.96.249-.249.56-.373.933-.373zm8 0c.373 0 .684.124.933.373.25.249.383.569.4.96v1.173c-.017.391-.15.711-.4.96-.249.25-.56.374-.933.374s-.684-.125-.933-.374c-.25-.249-.383-.569-.4-.96V12.44c.017-.391.15-.711.4-.96.249-.249.56-.373.933-.373z" fill="currentColor" stroke="none"></path>
+                      </svg>
+                    </a>
+                  )}
+                  
+                  {authorSocials.weibo && (
+                    <a 
+                      href={authorSocials.weibo}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      class="text-muted-foreground hover:text-foreground transition-colors"
+                      aria-label="微博"
+                      title="微博"
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M10.098 20c-3.3 0-6-2.7-6-6s2.7-6 6-6 6 2.7 6 6-2.7 6-6 6zm3.3-6c0-1.8-1.5-3.3-3.3-3.3S6.8 12.2 6.8 14s1.5 3.3 3.3 3.3 3.3-1.5 3.3-3.3z" fill="currentColor" stroke="none"></path>
+                        <path d="M20.305 9.097c-.78-.782-1.931-1.078-3.005-.766l-.014-.015c-.24-.24-.63-.232-.862.015-.232.246-.225.636.016.877.01.01.022.013.032.022.388.804.157 1.707-.536 2.4-.693.693-1.596.924-2.4.536-.01-.01-.013-.022-.022-.03-.241-.242-.631-.25-.877-.017-.247.233-.256.622-.015.862l.015.013c-.312 1.074-.016 2.225.766 3.005.78.781 1.931 1.077 3.005.766l.014.015c.24.24.63.232.862-.016.232-.246.225-.636-.016-.877-.01-.01-.022-.013-.032-.022-.388-.804-.157-1.707.536-2.4.693-.693 1.596-.923 2.4-.536.01.01.013.022.022.03.241.242.631.25.877.017.247-.232.256-.622.015-.862l-.015-.013c.312-1.073.016-2.224-.766-3.005z" fill="currentColor" stroke="none"></path>
+                        <path d="M19.818 5.839c-1.611-1.611-3.982-2.22-6.162-1.584l-.03-.03c-.494-.494-1.3-.478-1.779.03-.478.508-.463 1.313.03 1.808.02.02.045.027.066.045.798 1.66.322 3.522-1.106 4.95-1.428 1.428-3.29 1.904-4.95 1.106-.02-.02-.025-.046-.045-.066-.495-.493-1.3-.508-1.808-.03-.508.479-.524 1.285-.03 1.779l.03.03c-.636 2.18-.027 4.551 1.584 6.162 1.611 1.611 3.982 2.22 6.162 1.584l.03.03c.494.494 1.3.478 1.779-.03.478-.508.463-1.313-.03-1.808-.02-.02-.045-.027-.066-.045-.798-1.66-.322-3.522 1.106-4.95 1.428-1.428 3.29-1.904 4.95-1.106.02.02.025.046.045.066.495.493 1.3.508 1.808.03.508-.479.524-1.285.03-1.779l-.03-.03c.636-2.18.027-4.551-1.584-6.162z" fill="currentColor" stroke="none"></path>
+                      </svg>
+                    </a>
+                  )}
+                  
+                  {authorSocials.youtube && (
+                    <a 
+                      href={authorSocials.youtube}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      class="text-muted-foreground hover:text-foreground transition-colors"
+                      aria-label="YouTube"
+                      title="YouTube"
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M2.5 17a24.12 24.12 0 0 1 0-10 2 2 0 0 1 1.4-1.4 49.56 49.56 0 0 1 16.2 0A2 2 0 0 1 21.5 7a24.12 24.12 0 0 1 0 10 2 2 0 0 1-1.4 1.4 49.55 49.55 0 0 1-16.2 0A2 2 0 0 1 2.5 17"></path>
+                        <path d="m10 15 5-3-5-3z"></path>
+                      </svg>
+                    </a>
+                  )}
+                  
+                  {authorSocials.email && (
+                    <a 
+                      href={`mailto:${authorSocials.email}`}
+                      class="text-muted-foreground hover:text-foreground transition-colors"
+                      aria-label="Email"
+                      title="Email"
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect width="20" height="16" x="2" y="4" rx="2"></rect>
+                        <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"></path>
+                      </svg>
+                    </a>
+                  )}
+                </div>
+              )}
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+      
+      <!-- 关于博客 -->
+      <div class="prose prose-lg dark:prose-invert max-w-none">
+        <slot />
+      </div>
+    </div>
+  </main>
+  
+  <Footer slot="footer" />
+</BaseLayout>

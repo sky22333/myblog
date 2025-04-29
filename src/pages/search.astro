@@ -1,0 +1,281 @@
+---
+// 搜索结果页面
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Navbar from '@/components/layout/Navbar.astro';
+import Footer from '@/components/layout/Footer.astro';
+import { getSiteConfig } from '@/lib/config';
+
+// 获取站点配置
+const siteConfig = getSiteConfig();
+
+// 获取搜索关键词
+const { searchParams } = Astro.url;
+const query = searchParams.get('q') || '';
+---
+
+<BaseLayout title={`搜索: ${query}`} description={`"${query}"的搜索结果`}>
+  <Navbar slot="header" />
+  
+  <section class="container py-10">
+    <div class="mb-8">
+      <h1 class="text-3xl font-bold tracking-tight mb-4">搜索结果: {query}</h1>
+      <p class="text-lg text-muted-foreground" id="search-results-count">
+        正在搜索...
+      </p>
+    </div>
+    
+    <div class="mb-8">
+      <form action="/search" method="get" class="flex gap-2">
+        <input 
+          type="text" 
+          name="q" 
+          value={query}
+          placeholder="搜索文章..." 
+          class="flex-1 px-4 py-2 rounded-md border bg-background"
+        />
+        <button 
+          type="submit" 
+          class="bg-primary text-primary-foreground px-4 py-2 rounded-md hover:bg-primary/90 transition-colors"
+        >
+          搜索
+        </button>
+      </form>
+    </div>
+    
+    <div id="search-results" class="grid gap-6">
+      <div class="text-center py-10">
+        <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
+        <p class="mt-4 text-muted-foreground">加载搜索结果...</p>
+      </div>
+    </div>
+    
+    <div class="mt-10">
+      <a href="/posts" class="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="m15 18-6-6 6-6"></path>
+        </svg>
+        返回所有文章
+      </a>
+    </div>
+  </section>
+  
+  <Footer slot="footer" />
+</BaseLayout>
+
+<script>
+  // 错误消息常量
+  const ERROR_MESSAGES = {
+    INIT_FAILED: '搜索引擎未能正确初始化',
+    LOAD_FAILED: '搜索引擎未能在页面上加载',
+    INCOMPATIBLE: '搜索引擎接口不兼容'
+  };
+
+  // UI模板函数
+  const getEmptyResultsTemplate = (query) => `
+    <div class="text-center py-10">
+      <p class="text-lg text-muted-foreground">没有找到含有"${query}"的文章</p>
+      <div class="mt-4">
+        <a href="/posts" class="inline-flex items-center justify-center rounded-md bg-primary px-6 py-2 text-sm font-medium text-primary-foreground shadow transition-colors hover:bg-primary/90">
+          浏览全部文章
+        </a>
+      </div>
+    </div>
+  `;
+
+  const getErrorTemplate = (errorMessage) => `
+    <div class="text-center py-10">
+      <p class="text-lg text-muted-foreground">搜索出现错误，请稍后再试</p>
+      <p class="mt-2 text-sm text-muted-foreground">${errorMessage}</p>
+      <div class="mt-4">
+        <a href="/posts" class="inline-flex items-center justify-center rounded-md bg-primary px-6 py-2 text-sm font-medium text-primary-foreground shadow transition-colors hover:bg-primary/90">
+          浏览全部文章
+        </a>
+      </div>
+    </div>
+  `;
+
+  const getArticleTemplate = (result) => `
+    <a href="${result.url}" class="group">
+      <div class="relative overflow-hidden rounded-lg border bg-background p-5 transition-all hover:shadow-md">
+        <div class="flex flex-col md:flex-row md:items-start gap-4">
+          <div class="w-full">
+            <h2 class="text-xl font-semibold leading-tight line-clamp-2 group-hover:text-primary transition-colors">
+              ${result.meta.title || '无标题'}
+            </h2>
+            
+            <p class="mt-2 text-muted-foreground line-clamp-2">
+              ${result.excerpt || result.meta.description || '无描述'}
+            </p>
+            
+            <div class="mt-4 flex items-center text-xs text-muted-foreground">
+              ${result.meta.date ? `
+                <time datetime="${result.meta.date}">
+                  ${new Date(result.meta.date).toLocaleDateString('zh-CN', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                  })}
+                </time>
+              `: ''}
+            </div>
+            
+            ${result.meta.tags ? `
+              <div class="mt-3 flex flex-wrap gap-2">
+                ${result.meta.tags.split(',').map(tag => `
+                  <a 
+                    href="/tags/${tag.trim()}"
+                    class="inline-flex items-center text-xs bg-muted px-2 py-1 rounded-md hover:bg-muted/80"
+                  >
+                    ${tag.trim()}
+                  </a>
+                `).join('')}
+              </div>
+            ` : ''}
+          </div>
+        </div>
+      </div>
+    </a>
+  `;
+
+  // 搜索历史管理
+  const searchHistory = {
+    get: () => {
+      try {
+        const history = localStorage.getItem('searchHistory');
+        return history ? JSON.parse(history) : [];
+      } catch (error) {
+        console.error('Failed to get search history:', error);
+        return [];
+      }
+    },
+    
+    add: (query) => {
+      if (!query.trim()) return;
+      
+      try {
+        const history = searchHistory.get();
+        const filteredHistory = history.filter(item => item !== query);
+        const newHistory = [query, ...filteredHistory].slice(0, 10);
+        localStorage.setItem('searchHistory', JSON.stringify(newHistory));
+      } catch (error) {
+        console.error('Failed to add search history:', error);
+      }
+    }
+  };
+
+  document.addEventListener('DOMContentLoaded', performSearch);
+  
+  async function performSearch() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const query = urlParams.get('q') || '';
+    const searchResultsElement = document.getElementById('search-results');
+    const searchResultsCountElement = document.getElementById('search-results-count');
+    
+    if (!query) {
+      if (searchResultsElement) {
+        searchResultsElement.innerHTML = `
+          <div class="text-center py-10">
+            <p class="text-lg text-muted-foreground">请输入搜索关键词</p>
+            <div class="mt-4">
+              <a href="/posts" class="inline-flex items-center justify-center rounded-md bg-primary px-6 py-2 text-sm font-medium text-primary-foreground shadow transition-colors hover:bg-primary/90">
+                浏览全部文章
+              </a>
+            </div>
+          </div>
+        `;
+      }
+      if (searchResultsCountElement) {
+        searchResultsCountElement.textContent = '';
+      }
+      return;
+    }
+    
+    // 保存搜索历史
+    searchHistory.add(query);
+    
+    try {
+      const pagefind = await loadPagefindLibrary();
+      
+      if (!pagefind) {
+        throw new Error(ERROR_MESSAGES.INIT_FAILED);
+      }
+      
+      const search = await pagefind.search(query);
+      
+      const results = await Promise.all(
+        search.results.map(async (result) => {
+          const data = await result.data();
+          return data;
+        })
+      );
+      
+      if (searchResultsCountElement) {
+        searchResultsCountElement.textContent = `找到 ${results.length} 篇含有"${query}"的文章`;
+      }
+      
+      if (searchResultsElement) {
+        if (results.length === 0) {
+          searchResultsElement.innerHTML = getEmptyResultsTemplate(query);
+        } else {
+          searchResultsElement.innerHTML = results.map(getArticleTemplate).join('');
+        }
+      }
+    } catch (error) {
+      if (import.meta.env.DEV) {
+        console.error('搜索出错:', error);
+      }
+      
+      const errorMessage = error instanceof Error ? error.message : '未知错误';
+      
+      if (searchResultsElement) {
+        searchResultsElement.innerHTML = getErrorTemplate(errorMessage);
+      }
+      
+      if (searchResultsCountElement) {
+        searchResultsCountElement.textContent = '搜索出现错误';
+      }
+    }
+  }
+  
+  async function loadPagefindLibrary() {
+    try {
+      if (document.readyState !== 'complete') {
+        await new Promise(resolve => {
+          window.addEventListener('load', resolve, { once: true });
+        });
+      }
+      
+      await new Promise(resolve => setTimeout(resolve, 200));
+      
+      let attempts = 0;
+      const maxAttempts = 30;
+      
+      while (!window.pagefind && attempts < maxAttempts) {
+        await new Promise(resolve => setTimeout(resolve, 200));
+        attempts++;
+      }
+      
+      if (!window.pagefind) {
+        throw new Error(ERROR_MESSAGES.LOAD_FAILED);
+      }
+      
+      if (typeof window.pagefind.init === 'function' && typeof window.pagefind.search !== 'function') {
+        await window.pagefind.init();
+      } else if (!window.pagefind.search) {
+        const pagefindObj = window.pagefind.default || window.pagefind;
+        if (pagefindObj && typeof pagefindObj.search === 'function') {
+          window.pagefind = pagefindObj;
+        } else {
+          throw new Error(ERROR_MESSAGES.INCOMPATIBLE);
+        }
+      }
+      
+      return window.pagefind;
+    } catch (error) {
+      if (import.meta.env.DEV) {
+        console.error('加载搜索引擎失败:', error);
+      }
+      throw error;
+    }
+  }
+</script>

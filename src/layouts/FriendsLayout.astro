@@ -1,0 +1,96 @@
+---
+// 友链页面布局组件
+// 用于显示友情链接列表
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Navbar from '@/components/layout/Navbar.astro';
+import Footer from '@/components/layout/Footer.astro';
+import { Card, CardContent } from '@/components/ui/card/Card';
+
+interface FriendLink {
+  name: string;
+  url: string;
+  description: string;
+  avatar: string;
+}
+
+interface Props {
+  title: string;
+  description?: string;
+  friendLinks: FriendLink[];
+}
+
+const { 
+  title = "友情链接", 
+  description = "与我交换友链的博客和网站", 
+  friendLinks 
+} = Astro.props;
+---
+
+<BaseLayout title={title} description={description}>
+  <Navbar slot="header" />
+  
+  <main class="container py-10">
+    <header class="mb-10 text-center">
+      <h1 class="text-3xl md:text-4xl font-bold tracking-tight mb-4">{title}</h1>
+      {description && <p class="text-xl text-muted-foreground">{description}</p>}
+    </header>
+    
+    <!-- 友链列表 -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      {friendLinks.map((friend) => (
+        <a href={friend.url} target="_blank" rel="noopener noreferrer" class="block group">
+          <Card className="h-full transition-all hover:-translate-y-1 hover:shadow-md">
+            <CardContent className="p-6">
+              <div class="flex items-center space-x-4">
+                <div class="flex-shrink-0">
+                  <img 
+                    src={friend.avatar} 
+                    alt={friend.name}
+                    class="w-16 h-16 rounded-full object-cover"
+                    loading="lazy"
+                  />
+                </div>
+                <div>
+                  <h3 class="text-lg font-semibold group-hover:text-primary transition-colors">
+                    {friend.name}
+                  </h3>
+                  <p class="text-sm text-muted-foreground mt-1">
+                    {friend.description}
+                  </p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </a>
+      ))}
+    </div>
+    
+    <!-- 申请友链说明 -->
+    <div class="mt-16 max-w-2xl mx-auto">
+      <h2 class="text-2xl font-bold mb-6">申请友链</h2>
+      <Card>
+        <CardContent className="p-6">
+          <p class="mb-4">如果您想与我交换友链，请确保您的网站符合以下条件：</p>
+          <ul class="list-disc pl-6 space-y-2 mb-6">
+            <li>网站内容健康，无违法违规内容</li>
+            <li>网站已稳定运行至少3个月</li>
+            <li>网站有原创内容，且定期更新</li>
+            <li>已在您的网站添加本站友链</li>
+          </ul>
+          <p class="mb-4">请提供以下信息：</p>
+          <ul class="list-disc pl-6 space-y-2">
+            <li>网站名称</li>
+            <li>网站地址</li>
+            <li>网站描述（不超过50字）</li>
+            <li>网站图标/头像（推荐尺寸：128×128px）</li>
+          </ul>
+          <p class="mt-6 text-muted-foreground">
+            您可以通过电子邮件或在"关于"页面的评论区提交友链申请。
+          </p>
+        </CardContent>
+      </Card>
+    </div>
+  </main>
+  
+  <Footer slot="footer" />
+</BaseLayout>

@@ -1,0 +1,159 @@
+---
+// 主页面
+// 展示博客站点的首页，包括站点介绍和文章卡片
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Navbar from '@/components/layout/Navbar.astro';
+import Footer from '@/components/layout/Footer.astro';
+import { getCollection } from 'astro:content';
+import { getSiteConfig } from '@/lib/config';
+import { GoPin } from 'react-icons/go';
+import { FaAngleRight } from 'react-icons/fa';
+
+// 获取站点配置
+const siteConfig = getSiteConfig();
+const socialMedia = siteConfig.getSocialMedia();
+
+// 获取所有非草稿状态的文章，并按照日期排序
+const posts = await getCollection('posts', ({ data }) => {
+  return !data.draft;
+}).then(posts => 
+  posts.sort((a, b) => {
+    // 首先按照置顶状态排序
+    if (a.data.featured && !b.data.featured) return -1;
+    if (!a.data.featured && b.data.featured) return 1;
+    
+    // 然后按照发布日期排序（从新到旧）
+    return b.data.pubDate.valueOf() - a.data.pubDate.valueOf();
+  })
+);
+
+// 限制首页显示的文章数量
+const featuredPosts = posts.slice(0, 8);
+---
+
+<BaseLayout title={siteConfig.siteName}>
+  <Navbar slot="header" />
+  
+  <!-- 站点介绍部分 -->
+  <section class="py-12 md:py-16 lg:py-20">
+    <div class="container">
+      <div class="text-center space-y-4">
+        <h1 class="text-4xl font-bold tracking-tighter sm:text-5xl md:text-6xl">{siteConfig.siteName}</h1>
+        <p class="mx-auto max-w-[700px] text-lg text-muted-foreground md:text-xl">
+          {siteConfig.siteDescription}
+        </p>
+        
+        <!-- 社交媒体图标链接 -->
+        <div class="flex justify-center space-x-4 pt-4">
+          {socialMedia.map(({ platform, url, icon: Icon }) => (
+            Icon && (
+              <a 
+                href={platform === 'email' ? `mailto:${url}` : url} 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                class="text-muted-foreground hover:text-foreground transition-colors"
+                title={platform}
+              >
+                <Icon size={24} />
+              </a>
+            )
+          ))}
+        </div>
+      </div>
+    </div>
+  </section>
+  
+  <!-- 文章卡片部分 -->
+  <section class="pb-12 md:pb-16 lg:pb-20">
+    <div class="container">
+      <h2 class="text-2xl font-bold tracking-tight mb-8">最新文章</h2>
+      
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        {featuredPosts.map((post) => (
+          <a href={`/posts/${post.slug}`} class="group">
+            <div class="relative overflow-hidden rounded-lg border bg-background transition-all hover:shadow-md h-[300px] flex flex-col">
+              <!-- 文章封面图 -->
+              {post.data.cover && (
+                <div class="aspect-video overflow-hidden bg-muted/30">
+                  <img 
+                    src={post.data.cover} 
+                    alt={post.data.title}
+                    class="h-full w-full object-cover transition-all duration-300 group-hover:scale-105 opacity-0"
+                    onload="this.style.opacity='1'"
+                    onerror="this.onerror=null; this.src='/images/posts/placeholder.svg'; this.style.opacity='1';"
+                    loading="lazy"
+                  />
+                </div>
+              )}
+              
+              <!-- 文章内容 -->
+              <div class="p-2.5 flex flex-col flex-grow">
+                <!-- 置顶标识 -->
+                {post.data.featured && (
+                  <div class="absolute top-0 right-0 bg-secondary text-secondary-foreground text-xs md:text-sm font-medium px-2.5 py-1 rounded-bl-md flex items-center">
+                    <GoPin className="mr-1.5" size={14} />
+                    精选
+                  </div>
+                )}
+                
+                <!-- 文章标题 -->
+                <h3 class="text-md md:text-lg font-semibold leading-tight line-clamp-2 group-hover:text-primary transition-colors">
+                  {post.data.title}
+                </h3>
+                
+                <!-- 文章描述 -->
+                <p class="mt-1 text-sm text-muted-foreground line-clamp-2 flex-grow">
+                  {post.data.description}
+                </p>
+                
+                <!-- 文章元数据和标签合并为一行 -->
+                <div class="flex items-center justify-between text-xs mt-1.5">
+                  <div class="text-muted-foreground">
+                    <time datetime={post.data.pubDate.toISOString()}>
+                      {post.data.pubDate.toLocaleDateString(siteConfig.language, {
+                        year: 'numeric',
+                        month: 'short',
+                        day: 'numeric'
+                      })}
+                    </time>
+                    
+                    {post.data.readingTime && (
+                      <>
+                        <span class="mx-1">•</span>
+                        <span>{post.data.readingTime}分钟</span>
+                      </>
+                    )}
+                  </div>
+                  
+                  <!-- 文章标签 -->
+                  {post.data.tags && post.data.tags.length > 0 && (
+                    <div class="flex gap-1">
+                      {post.data.tags.slice(0, 1).map((tag) => (
+                        <span class="inline-flex items-center text-xs bg-muted px-1.5 py-0.5 rounded">
+                          {tag}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          </a>
+        ))}
+      </div>
+      
+      <!-- 查看全部文章按钮 -->
+      <div class="mt-10 flex justify-center">
+        <a 
+          href="/posts" 
+          class="inline-flex items-center justify-center rounded-md border border-input bg-background px-6 py-2 text-sm font-medium text-foreground shadow-sm hover:bg-accent hover:text-accent-foreground transition-colors"
+        >
+          查看全部文章
+          <FaAngleRight className="ml-1" size={16} />
+        </a>
+      </div>
+    </div>
+  </section>
+  
+  <Footer slot="footer" />
+</BaseLayout>

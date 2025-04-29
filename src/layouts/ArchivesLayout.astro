@@ -1,0 +1,82 @@
+---
+// 归档页面布局组件
+// 用于显示按时间归档的文章列表
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Navbar from '@/components/layout/Navbar.astro';
+import Footer from '@/components/layout/Footer.astro';
+import { formatDate } from '@/lib/utils';
+
+interface ArchiveItem {
+  year: number;
+  posts: any[];
+}
+
+interface Props {
+  title: string;
+  description?: string;
+  archives: ArchiveItem[];
+}
+
+const { 
+  title = "文章归档", 
+  description = "按时间归档的所有文章", 
+  archives 
+} = Astro.props;
+---
+
+<BaseLayout title={title} description={description}>
+  <Navbar slot="header" />
+  
+  <main class="container py-10">
+    <header class="mb-10 text-center">
+      <h1 class="text-3xl md:text-4xl font-bold tracking-tight mb-4">{title}</h1>
+      {description && <p class="text-xl text-muted-foreground">{description}</p>}
+    </header>
+    
+    <!-- 归档列表 -->
+    <div class="max-w-3xl mx-auto">
+      {archives.map((archive) => (
+        <div class="mb-12">
+          <h2 class="text-2xl font-bold mb-6 pb-2 border-b">{archive.year}年</h2>
+          <ul class="space-y-4">
+            {archive.posts.map((post) => (
+              <li class="group">
+                <a href={`/posts/${post.slug}`} class="flex flex-col sm:flex-row sm:items-center justify-between py-2 hover:bg-muted/50 rounded-lg px-3 -mx-3 transition-colors">
+                  <div class="flex-1">
+                    <h3 class="text-lg font-medium group-hover:text-primary transition-colors">
+                      {post.data.featured && (
+                        <span class="inline-flex items-center mr-2 text-xs bg-primary text-primary-foreground px-2 py-0.5 rounded-md">
+                          置顶
+                        </span>
+                      )}
+                      {post.data.title}
+                    </h3>
+                    
+                    {post.data.tags && post.data.tags.length > 0 && (
+                      <div class="mt-1 flex flex-wrap gap-2">
+                        {post.data.tags.slice(0, 3).map((tag: string) => (
+                          <span class="inline-flex items-center text-xs bg-muted px-2 py-0.5 rounded-md">
+                            {tag}
+                          </span>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                  
+                  <time 
+                    datetime={post.data.pubDate.toISOString()}
+                    class="text-sm text-muted-foreground mt-1 sm:mt-0"
+                  >
+                    {formatDate(post.data.pubDate, 'zh-CN', { month: 'short', day: 'numeric' })}
+                  </time>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      ))}
+    </div>
+  </main>
+  
+  <Footer slot="footer" />
+</BaseLayout>

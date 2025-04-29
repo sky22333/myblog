@@ -1,0 +1,86 @@
+---
+// 文章详情页面
+// 显示单篇文章的内容
+import { getCollection, getEntry } from 'astro:content';
+import PostLayout from '@/layouts/PostLayout.astro';
+import { calculateReadingTime } from '@/lib/utils';
+
+// 生成静态路径
+export async function getStaticPaths() {
+  const posts = await getCollection('posts', ({ data }) => {
+    return !data.draft;
+  });
+
+  return posts.map((post) => ({
+    params: { slug: post.slug },
+    props: { post },
+  }));
+}
+
+// 获取文章数据
+const { post } = Astro.props;
+
+// 计算阅读时间（如果没有提供）
+const computedReadingTime = post.data.readingTime || calculateReadingTime(post.body);
+
+// 渲染文章内容
+const { Content } = await post.render();
+
+// 获取作者信息
+let authorName = post.data.author || "未知作者";
+let author = {
+  data: {
+    name: authorName,
+    bio: "博客作者",
+    avatar: null
+  }
+};
+
+try {
+  // 只有当作者ID存在时才尝试获取作者信息
+  if (post.data.author) {
+    try {
+      const authorEntry = await getEntry('authors', post.data.author);
+      // 只有在成功获取到作者信息时才覆盖默认值
+      if (authorEntry && authorEntry.data) {
+        author = authorEntry;
+      }
+    } catch (error) {
+      // 忽略collection不存在的错误，使用默认作者信息
+      console.log(`使用默认作者信息，作者集合可能不存在`);
+    }
+  }
+} catch (error) {
+  console.error(`作者 "${post.data.author}" 加载失败`, error);
+  // 使用默认作者信息（已在之前设置）
+}
+
+// 准备SEO关键词 - 结合文章标签和自定义关键词
+let keywords = [...(post.data.tags || [])];
+
+// 如果文章有自定义SEO关键词，添加到keywords
+if (post.data.seo?.keywords && Array.isArray(post.data.seo.keywords)) {
+  keywords = [...keywords, ...post.data.seo.keywords];
+}
+
+// 使用文章标题和描述作为关键词
+if (post.data.title && !keywords.includes(post.data.title)) {
+  keywords.push(post.data.title);
+}
+---
+
+<PostLayout
+  title={post.data.title}
+  description={post.data.description}
+  pubDate={post.data.pubDate}
+  updatedDate={post.data.updatedDate}
+  cover={post.data.cover}
+  author={author.data.name}
+  tags={post.data.tags}
+  featured={post.data.featured}
+  readingTime={computedReadingTime}
+  keywords={keywords}
+  slug={post.slug}
+>
+  <Content />
+</PostLayout> 

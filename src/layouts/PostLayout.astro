@@ -1,0 +1,153 @@
+---
+// 文章布局组件
+// 用于显示单篇文章的详细内容
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Navbar from '@/components/layout/Navbar.astro';
+import Footer from '@/components/layout/Footer.astro';
+import Breadcrumb from '@/components/ui/breadcrumb/Breadcrumb.astro';
+import { formatDate } from '@/lib/utils';
+import ImageLightbox from '@/components/ui/image-lightbox/ImageLightbox';
+
+interface Props {
+  title: string;
+  description: string;
+  pubDate: Date;
+  updatedDate?: Date;
+  cover?: string;
+  author: string;
+  tags?: string[];
+  featured?: boolean;
+  readingTime?: number;
+  keywords?: string[];
+  slug?: string;
+}
+
+const { 
+  title, 
+  description, 
+  pubDate, 
+  updatedDate, 
+  cover, 
+  author, 
+  tags = [], 
+  featured = false,
+  readingTime,
+  keywords = [],
+  slug = ""
+} = Astro.props;
+
+// 构建文章数据对象，用于结构化数据
+const postData = {
+  data: {
+    title,
+    description,
+    pubDate,
+    updatedDate,
+    cover,
+    author,
+    tags,
+    featured,
+    readingTime,
+    slug
+  }
+};
+
+// 构建面包屑导航项
+const breadcrumbItems = [
+  { name: '首页', url: '/' },
+  { name: '文章', url: '/posts' },
+  { name: title, url: Astro.url.pathname, current: true }
+];
+---
+
+<BaseLayout 
+  title={title} 
+  description={description} 
+  article={true} 
+  image={cover} 
+  keywords={keywords}
+  post={postData}
+>
+  <Navbar slot="header" />
+  
+  <article class="container py-10 max-w-4xl mx-auto">
+    <!-- 面包屑导航 -->
+    <Breadcrumb items={breadcrumbItems} className="mb-6" />
+    
+    <!-- 文章头部 -->
+    <header class="mb-8">
+      {featured && (
+        <div class="mb-4">
+          <span class="inline-flex items-center px-4 py-1.5 text-sm md:text-base font-medium rounded-md bg-secondary text-secondary-foreground">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2">
+              <path d="M19 8.71 13.29 3h-2.59L5 8.71l5.29 5.29L9 19h6l-1.29-5L19 8.71z"></path>
+            </svg>
+            精选文章
+          </span>
+        </div>
+      )}
+      
+      <h1 class="text-3xl md:text-4xl font-bold tracking-tight mb-4">{title}</h1>
+      
+      <p class="text-xl text-muted-foreground mb-6">{description}</p>
+      
+      <div class="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-muted-foreground">
+        <time datetime={pubDate.toISOString()}>
+          发布于 {formatDate(pubDate)}
+        </time>
+        
+        {updatedDate && (
+          <time datetime={updatedDate.toISOString()}>
+            更新于 {formatDate(updatedDate)}
+          </time>
+        )}
+        
+        {readingTime && (
+          <span>约 {readingTime} 分钟阅读</span>
+        )}
+        
+        <span>作者: {author}</span>
+      </div>
+    </header>
+    
+    <!-- 文章封面图 -->
+    {cover && (
+      <div class="mb-8 rounded-lg overflow-hidden">
+        <img 
+          src={cover} 
+          alt={title}
+          class="w-full h-auto object-cover"
+          onerror="this.onerror=null; this.src='/images/default-post.jpg';"
+          loading="lazy"
+        />
+      </div>
+    )}
+    
+    <!-- 文章内容 -->
+    <div class="prose prose-lg dark:prose-invert max-w-none">
+      <slot />
+    </div>
+    
+    <!-- 文章标签 -->
+    {tags.length > 0 && (
+      <div class="mt-8 pt-6 border-t">
+        <h2 class="text-lg font-semibold mb-4">标签</h2>
+        <div class="flex flex-wrap gap-2">
+          {tags.map((tag) => (
+            <a 
+              href={`/tags/${tag}`}
+              class="inline-flex items-center px-3 py-1 rounded-md text-sm bg-muted hover:bg-muted/80 transition-colors"
+            >
+              {tag}
+            </a>
+          ))}
+        </div>
+      </div>
+    )}
+  </article>
+  
+  <Footer slot="footer" />
+  
+  <!-- 图片灯箱组件 -->
+  <ImageLightbox client:load />
+</BaseLayout>

@@ -1,0 +1,229 @@
+---
+// 导航栏组件
+// 包含网站标题、导航链接和搜索框
+import SearchButton from "@/components/ui/search/SearchButton";
+import { getSiteConfig } from '@/lib/config';
+import { HiOutlineMenu } from 'react-icons/hi';
+import { RiSunLine, RiMoonLine } from 'react-icons/ri';
+
+// 从站点配置中获取导航项
+const siteConfig = getSiteConfig();
+const navItems = siteConfig.navItems;
+
+// 提取重复使用的样式类为变量
+const themeToggleButtonClass = "inline-flex items-center justify-center rounded-md p-2 text-sm font-medium transition-colors hover:bg-muted hover:text-foreground";
+const navLinkClass = "transition-colors hover:text-foreground/80 text-foreground/60";
+---
+
+<header class="sticky top-0 z-40 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+  <div class="container flex h-16 items-center justify-between">
+    <a href="/" class="flex items-center space-x-2">
+      <span class="inline-block font-bold text-xl md:text-2xl">{siteConfig.siteName}</span>
+    </a>
+    
+    <!-- 桌面端导航 -->
+    <nav class="hidden md:flex items-center space-x-6 text-base font-medium">
+      {navItems.map((item) => (
+        <a 
+          href={item.url} 
+          class={navLinkClass}
+        >
+          {item.title}
+        </a>
+      ))}
+      <div class="flex items-center space-x-1">
+        <SearchButton client:load />
+        
+        <!-- 静态主题切换按钮 -->
+        <button 
+          id="theme-toggle" 
+          class={themeToggleButtonClass}
+          aria-label="切换主题"
+          title="切换主题"
+        >
+          <!-- 太阳图标-->
+          <RiSunLine id="theme-toggle-light-icon" size={20} class="hidden" />
+          
+          <!-- 月亮图标 -->
+          <RiMoonLine id="theme-toggle-dark-icon" size={20} class="hidden" />
+        </button>
+      </div>
+    </nav>
+    
+    <!-- 移动端导航按钮 -->
+    <button 
+      class="flex md:hidden items-center justify-center p-2 rounded-md cursor-pointer touch-manipulation"
+      style="will-change: transform; touch-action: manipulation;"
+      id="mobile-nav-toggle" 
+      aria-label="切换菜单"
+    >
+      <HiOutlineMenu size={24} />
+    </button>
+  </div>
+  
+  <!-- 移动端导航菜单 -->
+  <div class="md:hidden absolute top-16 left-0 right-0 border-b bg-background/[0.99] backdrop-blur-lg supports-[backdrop-filter]:bg-background/95 h-0 overflow-hidden transition-all duration-300 ease-in-out w-full z-30" id="mobile-nav-menu">
+    <nav class="container py-4 flex flex-col space-y-3 text-base font-medium">
+      {navItems.map((item) => (
+        <a 
+          href={item.url} 
+          class={navLinkClass}
+        >
+          {item.title}
+        </a>
+      ))}
+      <div class="flex items-center space-x-1 pt-2">
+        <SearchButton client:load />
+        
+        <!-- 静态主题切换按钮 -->
+        <button 
+          id="mobile-theme-toggle" 
+          class={themeToggleButtonClass}
+          aria-label="切换主题"
+          title="切换主题"
+        >
+          <!-- 太阳图标 -->
+          <RiSunLine id="mobile-theme-toggle-light-icon" size={20} class="hidden" />
+          
+          <!-- 月亮图标 -->
+          <RiMoonLine id="mobile-theme-toggle-dark-icon" size={20} class="hidden" />
+        </button>
+      </div>
+    </nav>
+  </div>
+</header>
+
+<style>
+  #mobile-nav-menu.expanded {
+    height: auto;
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+    border-top: 1px solid var(--border);
+  }
+  
+  /* 性能优化 */
+  #mobile-nav-toggle {
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+  }
+  
+  /* 移动菜单动画 */
+  #mobile-nav-menu {
+    will-change: height;
+    transform: translateZ(0);
+  }
+  
+  /* 移动菜单链接 */
+  #mobile-nav-menu a {
+    position: relative;
+    padding: 0.5rem 0;
+  }
+  
+  /* 增强移动端点击区域大小 */
+  @media (max-width: 767px) {
+    #mobile-nav-toggle {
+      padding: 0.75rem;
+      margin: -0.75rem;
+    }
+    
+    #mobile-nav-menu a,
+    #mobile-nav-menu button {
+      min-height: 44px;
+      display: flex;
+      align-items: center;
+    }
+  }
+</style>
+
+<script is:inline>
+  document.addEventListener('astro:page-load', setupNavigation);
+  setupNavigation();
+  
+  function setupNavigation() {
+    setupMobileMenu();
+    
+    setupThemeToggle();
+    
+    updateThemeIcons();
+  }
+  
+  // 移动菜单设置
+  function setupMobileMenu() {
+    const mobileNavToggle = document.getElementById('mobile-nav-toggle');
+    const mobileNavMenu = document.getElementById('mobile-nav-menu');
+    
+    if (mobileNavToggle && mobileNavMenu) {
+      mobileNavToggle.onclick = function(e) {
+        e.preventDefault();
+        mobileNavMenu.classList.toggle('expanded');
+      };
+
+      const menuItems = mobileNavMenu.querySelectorAll('a');
+      menuItems.forEach(item => {
+        item.onclick = function() {
+          mobileNavMenu.classList.remove('expanded');
+        };
+      });
+    }
+  }
+  
+  // 主题切换设置
+  function setupThemeToggle() {
+    const themeToggleButtons = [
+      document.getElementById('theme-toggle'),
+      document.getElementById('mobile-theme-toggle')
+    ];
+    
+    themeToggleButtons.forEach(button => {
+      if (button) {
+        button.onclick = toggleTheme;
+      }
+    });
+  }
+  
+  // 切换主题
+  function toggleTheme() {
+    const isDark = document.documentElement.classList.contains('dark');
+    
+    if (isDark) {
+      document.documentElement.classList.remove('dark');
+      localStorage.setItem('theme', 'light');
+    } else {
+      document.documentElement.classList.add('dark');
+      localStorage.setItem('theme', 'dark');
+    }
+    
+    updateThemeIcons();
+  }
+  
+  // 更新主题图标
+  function updateThemeIcons() {
+    const isDark = document.documentElement.classList.contains('dark');
+
+    const lightIcons = ['theme-toggle-light-icon', 'mobile-theme-toggle-light-icon'];
+    const darkIcons = ['theme-toggle-dark-icon', 'mobile-theme-toggle-dark-icon'];
+    
+    lightIcons.forEach(id => {
+      const icon = document.getElementById(id);
+      if (icon) icon.classList.toggle('hidden', !isDark);
+    });
+    
+    darkIcons.forEach(id => {
+      const icon = document.getElementById(id);
+      if (icon) icon.classList.toggle('hidden', isDark);
+    });
+  }
+  
+  document.addEventListener('astro:after-swap', function() {
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme === 'dark') {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+    
+    updateThemeIcons();
+    
+    setupNavigation();
+  });
+</script>
