@@ -30,7 +30,7 @@ export const GET: APIRoute = async () => {
     <loc>${site}/posts/</loc>
     <lastmod>${lastMod}</lastmod>
     <changefreq>daily</changefreq>
-    <priority>0.9</priority>
+    <priority>1.0</priority>
   </url>
   
   <!-- 关于页 -->
@@ -54,7 +54,7 @@ export const GET: APIRoute = async () => {
     <loc>${site}/archives/</loc>
     <lastmod>${lastMod}</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
+    <priority>0.9</priority>
   </url>
   
   <!-- 文章详情页 -->
