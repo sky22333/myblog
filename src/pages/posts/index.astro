@@ -18,6 +18,25 @@ const posts = await getCollection('posts', ({ data }) => {
     return b.data.pubDate.valueOf() - a.data.pubDate.valueOf();
   })
 );
+
+// 收集所有文章的标签，并计算每个标签的数量
+const tagMap = new Map();
+posts.forEach((post) => {
+  if (post.data.tags && Array.isArray(post.data.tags)) {
+    post.data.tags.forEach((tag: string) => {
+      if (tagMap.has(tag)) {
+        tagMap.set(tag, tagMap.get(tag) + 1);
+      } else {
+        tagMap.set(tag, 1);
+      }
+    });
+  }
+});
+
+// 转换为数组并按文章数量排序
+const sortedTags = Array.from(tagMap.entries())
+  .sort((a, b) => b[1] - a[1])
+  .map(([tag, count]) => ({ tag, count }));
 ---
 
 <BaseLayout title="文章列表">
@@ -25,10 +44,25 @@ const posts = await getCollection('posts', ({ data }) => {
   
   <section class="py-12 md:py-16">
     <div class="container">
-      <div class="max-w-2xl mx-auto mb-12 text-center">
+      <div class="max-w-2xl mx-auto mb-8 text-center">
         <h1 class="relative inline-block text-4xl font-bold tracking-tight mb-4">
           <span class="relative z-10">所有文章</span>
         </h1>
+      </div>
+
+      <!-- 标签汇总部分 -->
+      <div class="max-w-4xl mx-auto mb-12">
+        <div class="flex flex-wrap justify-center gap-2">
+          {sortedTags.map(({ tag, count }) => (
+            <a 
+              href={`/tags/${tag}`} 
+              class="inline-flex items-center px-3 py-1.5 rounded-md text-sm transition-all hover:scale-105 bg-muted hover:bg-primary hover:text-primary-foreground"
+            >
+              <span class="mr-1.5">{tag}</span>
+              <span class="text-xs rounded-full bg-background px-2 py-0.5">{count}</span>
+            </a>
+          ))}
+        </div>
       </div>
       
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">

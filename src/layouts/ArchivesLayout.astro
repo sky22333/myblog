@@ -37,7 +37,7 @@ const {
     <div class="max-w-3xl mx-auto">
       {archives.map((archive) => (
         <div class="mb-12">
-          <h2 class="text-2xl font-bold mb-6 pb-2 border-b">{archive.year}年</h2>
+          <h2 class="text-2xl font-bold mb-6 pb-2 border-b text-primary">{archive.year}年</h2>
           <ul class="space-y-4">
             {archive.posts.map((post) => (
               <li class="group">
@@ -55,7 +55,7 @@ const {
                     {post.data.tags && post.data.tags.length > 0 && (
                       <div class="mt-1 flex flex-wrap gap-2">
                         {post.data.tags.slice(0, 3).map((tag: string) => (
-                          <span class="inline-flex items-center text-xs bg-muted px-2 py-0.5 rounded-md">
+                          <span class="inline-flex items-center text-xs bg-secondary/40 text-secondary-foreground px-2 py-0.5 rounded-md">
                             {tag}
                           </span>
                         ))}

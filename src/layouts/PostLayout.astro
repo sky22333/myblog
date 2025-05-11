@@ -175,5 +175,65 @@ document.addEventListener('astro:page-load', () => {
       }
     }
   });
+  
+  // 为代码块添加复制按钮
+  setupCodeBlockCopyButtons();
 });
+
+// 设置代码块复制按钮
+function setupCodeBlockCopyButtons() {
+  const codeBlocks = document.querySelectorAll('pre:has(code)');
+  
+  codeBlocks.forEach(pre => {
+    // 确保代码块有相对定位，以便正确放置复制按钮
+    pre.style.position = 'relative';
+    
+    const code = pre.querySelector('code');
+    if (!code) return;
+    
+    const codeContent = code.textContent || '';
+    
+    // 创建复制按钮容器
+    const buttonContainer = document.createElement('div');
+    buttonContainer.className = 'code-copy-button-container';
+    buttonContainer.style.position = 'absolute';
+    buttonContainer.style.right = '0.5rem';
+    buttonContainer.style.top = '0.5rem';
+    
+    // 创建复制按钮
+    const copyButton = document.createElement('button');
+    copyButton.className = 'code-copy-button rounded-md p-1.5 text-xs font-medium opacity-70 hover:opacity-100 transition-opacity bg-primary/10 text-primary hover:bg-primary/20 focus:outline-none focus:ring-2 focus:ring-primary/40';
+    copyButton.setAttribute('aria-label', '复制代码');
+    copyButton.setAttribute('title', '复制代码');
+    
+    // 复制图标 (使用内联SVG以避免依赖)
+    copyButton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>`;
+    
+    // 添加点击复制功能
+    copyButton.addEventListener('click', async () => {
+      try {
+        await navigator.clipboard.writeText(codeContent);
+        
+        // 复制成功后显示成功图标
+        const originalInnerHTML = copyButton.innerHTML;
+        copyButton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>`;
+        copyButton.setAttribute('aria-label', '已复制');
+        copyButton.setAttribute('title', '已复制');
+        
+        // 2秒后恢复原始图标
+        setTimeout(() => {
+          copyButton.innerHTML = originalInnerHTML;
+          copyButton.setAttribute('aria-label', '复制代码');
+          copyButton.setAttribute('title', '复制代码');
+        }, 2000);
+      } catch (err) {
+        console.error('复制失败:', err);
+      }
+    });
+    
+    // 将按钮添加到容器并添加到代码块
+    buttonContainer.appendChild(copyButton);
+    pre.appendChild(buttonContainer);
+  });
+}
 </script>
