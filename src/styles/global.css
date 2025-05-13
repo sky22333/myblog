@@ -169,7 +169,7 @@ html {
 
 .prose a {
   color: hsla(var(--foreground), 0.8);
-  text-decoration-line: underline;
+  text-decoration: none;
   text-underline-offset: 2px;
 }
 
