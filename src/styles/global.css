@@ -96,6 +96,11 @@ body {
   color: hsl(var(--foreground));
 }
 
+/* 移除超链接默认下划线 */
+a {
+  text-decoration: none;
+}
+
 /* 自定义滚动条样式 */
 ::-webkit-scrollbar {
   width: 10px;

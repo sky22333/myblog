@@ -87,13 +87,13 @@ function getMonthName(month) {
                 <div class="col-span-1 ring-1 ring-border/30 bg-card rounded-xl overflow-hidden shadow-xl backdrop-blur-sm hover:shadow-lg transition-all duration-300">
                   <!-- 月份标记 -->
                   <div class="bg-primary/10 border-b border-b-primary/10 px-4 py-2.5 flex justify-between items-center">
-                    <h3 class="text-lg font-semibold text-primary flex items-center">
-                      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-primary/70" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <h3 class="text-lg font-semibold text-foreground flex items-center">
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-foreground/70" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                       </svg>
                       {getMonthName(monthData.month)}
                     </h3>
-                    <span class="bg-primary/20 text-primary text-xs font-medium px-2.5 py-1 rounded-full">
+                    <span class="bg-primary/20 text-foreground text-xs font-medium px-2.5 py-1 rounded-full">
                       {monthData.posts.length} 篇
                     </span>
                   </div>
@@ -108,7 +108,7 @@ function getMonthName(month) {
                         >
                           <div class="flex items-start gap-3">
                             <!-- 日期标记 -->
-                            <div class="flex-shrink-0 flex flex-col items-center justify-center w-12 h-12 bg-primary/5 text-primary rounded-lg overflow-hidden">
+                            <div class="flex-shrink-0 flex flex-col items-center justify-center w-12 h-12 bg-primary/5 text-foreground rounded-lg overflow-hidden">
                               <span class="text-xs font-medium">
                                 {post.data.pubDate.toLocaleDateString('zh-CN', {
                                   month: 'short'
