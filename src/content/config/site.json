@@ -40,10 +40,10 @@
   "postsPerPage": 12,
   "friendLinks": [
     {
-      "name": "示例友链1",
-      "url": "https://example1.com",
-      "description": "友链1描述",
-      "avatar": "https://t.alcy.cc/moe?postId=15",
+      "name": "zeroanon",
+      "url": "https://zeroanon.com/",
+      "description": "不做圣经里腐朽的诗集，要做禁书里最惊世骇俗的篇章",
+      "avatar": "https://avatars.githubusercontent.com/u/119206123?v=4",
       "tags": ["前端", "技术"]
     },
     {
