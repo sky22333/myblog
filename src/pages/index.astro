@@ -38,8 +38,22 @@ const featuredPosts = posts.slice(0, 8);
   <section class="py-12 md:py-16 lg:py-20">
     <div class="container">
       <div class="text-center space-y-4">
-        <h1 class="text-4xl font-bold tracking-tighter sm:text-5xl md:text-6xl">{siteConfig.siteName}</h1>
-        <p class="mx-auto max-w-[700px] text-lg text-muted-foreground md:text-xl">
+        <h1 class="font-bold tracking-tighter min-h-[1.2em] flex justify-center items-center gap-1">
+          <div class="relative w-full max-w-[800px] h-[150px] flex items-center justify-center overflow-visible">
+            <svg class="w-full h-full overflow-visible" viewBox="0 0 800 150" preserveAspectRatio="xMidYMid meet">
+              <text
+                x="50%"
+                y="50%"
+                text-anchor="middle"
+                dominant-baseline="middle"
+                class="handwriting-title animate-stroke"
+              >
+                {siteConfig.siteName}
+              </text>
+            </svg>
+          </div>
+        </h1>
+        <p class="mx-auto max-w-[700px] text-lg text-muted-foreground md:text-xl font-handwriting mt-4">
           {siteConfig.siteDescription}
         </p>
         
@@ -157,4 +171,37 @@ const featuredPosts = posts.slice(0, 8);
   </section>
   
   <Footer slot="footer" />
+
+  <style is:global>
+    .handwriting-title {
+      font-family: "Long Cang", cursive;
+      font-size: clamp(60px, 15vw, 150px);
+      font-weight: 400; /* 强制正常字重 */
+      fill: currentColor;
+      fill-opacity: 0;
+      stroke: currentColor;
+      stroke-width: 1.5px;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      /* 调整路径长度估算：4个汉字约20-22em，减少空跑时间 */
+      stroke-dasharray: 22em;
+      stroke-dashoffset: 22em;
+      /* 动画：运笔延长至 10s，使用 ease-in-out 让速度更均匀；填充从 4s 开始 */
+      animation: 
+        drawStroke 10s ease-in-out forwards,
+        fillFadeIn 4s ease-out 4s forwards;
+    }
+
+    @keyframes drawStroke {
+      to {
+        stroke-dashoffset: 0;
+      }
+    }
+
+    @keyframes fillFadeIn {
+      to {
+        fill-opacity: 1;
+      }
+    }
+  </style>
 </BaseLayout>

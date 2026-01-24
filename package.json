@@ -13,6 +13,7 @@
   "dependencies": {
     "@fontsource/geist-mono": "^5.2.7",
     "@fontsource/inter": "^5.2.8",
+    "@fontsource/long-cang": "^5.2.8",
     "@types/react": "^18.2.45",
     "@types/react-dom": "^18.2.18",
     "react": "^18.2.0",

@@ -64,6 +64,7 @@ export default {
       fontFamily: {
         sans: ["Inter", ...fontFamily.sans],
         mono: ["Geist Mono", ...fontFamily.mono],
+        handwriting: ["Long Cang", "cursive", ...fontFamily.sans],
       },
       keyframes: {
         "accordion-down": {
