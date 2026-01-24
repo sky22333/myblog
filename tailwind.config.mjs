@@ -62,81 +62,8 @@ export default {
         sm: "calc(var(--radius) - 4px)",
       },
       fontFamily: {
-        sans: ["var(--font-sans)", ...fontFamily.sans],
-      },
-      fontWeight: {
-        bold: "700",
-      },
-      textAlign: {
-        left: "left",
-      },
-      width: {
-        full: "100%",
-      },
-      maxWidth: {
-        none: "none",
-        xs: "20rem",
-        sm: "24rem",
-        md: "28rem",
-        lg: "32rem",
-        xl: "36rem",
-        "2xl": "42rem",
-        "3xl": "48rem",
-        "4xl": "56rem",
-        "5xl": "64rem",
-        "6xl": "72rem",
-        "7xl": "80rem",
-        full: "100%",
-      },
-      height: {
-        auto: "auto",
-      },
-      margin: {
-        auto: "auto",
-        "4": "1rem",
-        "6": "1.5rem",
-        "8": "2rem",
-      },
-      padding: {
-        "1": "0.25rem",
-        "1.5": "0.375rem",
-        "2": "0.5rem",
-        "4": "1rem",
-        "6": "1.5rem",
-      },
-      borderWidth: {
-        DEFAULT: "1px",
-        "0": "0",
-        "2": "2px",
-        "4": "4px",
-      },
-      listStyleType: {
-        disc: "disc",
-        decimal: "decimal",
-      },
-      overflow: {
-        auto: "auto",
-        hidden: "hidden",
-        "x-auto": "auto",
-      },
-      position: {
-        relative: "relative",
-        absolute: "absolute",
-      },
-      inset: {
-        "0": "0",
-      },
-      display: {
-        grid: "grid",
-      },
-      gridTemplateColumns: {
-        "1": "repeat(1, minmax(0, 1fr))",
-        "2": "repeat(2, minmax(0, 1fr))",
-        "3": "repeat(3, minmax(0, 1fr))",
-        "4": "repeat(4, minmax(0, 1fr))",
-      },
-      gap: {
-        "6": "1.5rem",
+        sans: ["Inter", ...fontFamily.sans],
+        mono: ["Geist Mono", ...fontFamily.mono],
       },
       keyframes: {
         "accordion-down": {
@@ -156,12 +83,12 @@ export default {
           to: { opacity: 0 },
         },
         slideInFromTop: {
-          from: { transform: "translateY(-100%)" },
-          to: { transform: "translateY(0)" },
+          from: { transform: "translateY(-10px)", opacity: 0 },
+          to: { transform: "translateY(0)", opacity: 1 },
         },
         slideInFromBottom: {
-          from: { transform: "translateY(100%)" },
-          to: { transform: "translateY(0)" },
+          from: { transform: "translateY(10px)", opacity: 0 },
+          to: { transform: "translateY(0)", opacity: 1 },
         },
       },
       animation: {
@@ -172,90 +99,47 @@ export default {
         "slide-in-from-top": "slideInFromTop 0.3s ease-in-out",
         "slide-in-from-bottom": "slideInFromBottom 0.3s ease-in-out",
       },
-      transitionProperty: {
-        all: "all",
-        colors: "color, background-color, border-color, text-decoration-color, fill, stroke",
-      },
-      transitionDuration: {
-        "300": "300ms",
-      },
-      translate: {
-        "0": "0",
-        "-1": "-0.25rem",
-      },
-      boxShadow: {
-        md: "0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)",
-      },
-      backgroundImage: {
-        "gradient-to-r": "linear-gradient(to right, var(--tw-gradient-stops))",
-      },
-      backdropBlur: {
-        md: "12px",
-      },
-      scale: {
-        "110": "1.1",
-      },
-      textWrap: {
-        balance: "balance",
-      },
-      textShadow: {
-        DEFAULT: "0 2px 4px rgba(0, 0, 0, 0.1)",
-        lg: "0 4px 8px rgba(0, 0, 0, 0.2)",
-      },
-      scrollBehavior: {
-        smooth: "smooth",
-      },
-      lineHeight: {
-        "7": "1.75rem",
-      },
-      fontSize: {
-        sm: "0.875rem",
-        base: "1rem",
-        xl: "1.25rem",
-        "2xl": "1.5rem",
-        "3xl": "1.875rem",
-        "4xl": "2.25rem",
-      },
-      fontStyle: {
-        italic: "italic",
-      },
-      textUnderlineOffset: {
-        "2": "2px",
-      },
-      opacity: {
-        "0": "0",
-        "40": "0.4",
-        "60": "0.6",
-        "80": "0.8",
-        "100": "1",
-      },
-      zIndex: {
-        "50": "50",
-      },
-      scrollMargin: {
-        "20": "5rem",
-      },
-      tracking: {
-        tight: "-0.025em",
+      typography: {
+        DEFAULT: {
+          css: {
+            "code::before": {
+              content: '""',
+            },
+            "code::after": {
+              content: '""',
+            },
+            code: {
+              fontWeight: "400",
+              fontFamily: "Geist Mono, ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace",
+            },
+            "pre code": {
+              backgroundColor: "transparent",
+              borderWidth: "0",
+              borderRadius: "0",
+              padding: "0",
+              fontWeight: "inherit",
+              color: "inherit",
+              fontSize: "inherit",
+              fontFamily: "inherit",
+              lineHeight: "inherit",
+            },
+            pre: {
+              border: "1px solid hsl(var(--border))",
+              borderRadius: "var(--radius)",
+              backgroundColor: "transparent", // Allow Shiki to control background or use theme
+              color: "inherit",
+            },
+          },
+        },
       },
     },
   },
-  plugins: [require("tailwindcss-animate")],
+  plugins: [
+    require("tailwindcss-animate"),
+    require("@tailwindcss/typography"),
+  ],
   safelist: [
     'font-bold',
-    'text-left',
-    'w-full',
-    'max-w-none',
-    'h-auto',
-    'mx-auto',
-    'my-4',
-    'my-6',
-    'mt-6',
-    'mb-4',
-    'border-b',
-    'border-l-4',
-    'list-disc',
-    'list-decimal',
     'rounded',
     'rounded-lg',
     'transition-all',
@@ -268,7 +152,6 @@ export default {
     'will-change-transform',
     'transform-gpu',
     'text-balance',
-    'text-sm',
     'shadow-md',
   ],
 };

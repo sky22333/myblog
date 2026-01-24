@@ -13,13 +13,39 @@ import remarkToc from 'remark-toc';
 import rehypeSlug from 'rehype-slug';
 import rehypeAutolinkHeadings from 'rehype-autolink-headings';
 
+// 通用Markdown配置 - 避免重复代码
+const markdownConfig = {
+  syntaxHighlight: 'shiki',
+  shikiConfig: {
+    themes: {
+      light: 'github-light',
+      dark: 'github-dark',
+    },
+    wrap: true,
+  },
+  remarkPlugins: [
+    // 自动生成目录
+    [remarkToc, { tight: true }],
+  ],
+  rehypePlugins: [
+    // 为标题添加ID
+    rehypeSlug,
+    // 为标题添加锚点链接
+    [rehypeAutolinkHeadings, { behavior: 'append' }],
+  ],
+  gfm: true,
+};
+
 // https://astro.build/config
 export default defineConfig({
   site: 'https://www.52013120.xyz',
   
   // 开启HTML压缩
   compressHTML: true,
-  
+
+  // 配置Markdown文件 (.md)
+  // @ts-ignore
+  markdown: markdownConfig,
 
   // 集成插件
   integrations: [
@@ -27,21 +53,9 @@ export default defineConfig({
     react(),
     
     // MDX集成，支持Markdown扩展
-    mdx({
-      // MDX选项
-      remarkPlugins: [
-        // 自动生成目录
-        [remarkToc, { tight: true }],
-      ],
-      rehypePlugins: [
-        // 为标题添加ID
-        rehypeSlug,
-        // 为标题添加锚点链接
-        [rehypeAutolinkHeadings, { behavior: 'append' }],
-      ],
-      // 启用GFM (GitHub Flavored Markdown)
-      gfm: true,
-    }),
+    // @ts-ignore
+    mdx(markdownConfig),
+
     tailwind({
       configFile: './tailwind.config.mjs',
       applyBaseStyles: false,
