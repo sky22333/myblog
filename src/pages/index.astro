@@ -48,7 +48,7 @@ const featuredPosts = posts.slice(0, 8);
           {socialMedia.map(({ platform, url, icon: Icon }) => (
             Icon && (
               <a 
-                href={platform === 'email' ? `mailto:${url}` : url} 
+                href={platform === 'email' ? `mailto:${url as string}` : url as string} 
                 target="_blank" 
                 rel="noopener noreferrer" 
                 class="text-muted-foreground hover:text-foreground transition-colors"
@@ -80,7 +80,7 @@ const featuredPosts = posts.slice(0, 8);
                     alt={post.data.title}
                     class="h-full w-full object-cover transition-all duration-300 group-hover:scale-105 opacity-0 will-change-transform transform-gpu"
                     onload="this.style.opacity='1'"
-                    onerror="this.onerror=null; this.src='/images/posts/placeholder.svg'; this.style.opacity='1';"
+                    data-fallback="/images/posts/placeholder.svg"
                     loading="lazy"
                     decoding="async"
                   />

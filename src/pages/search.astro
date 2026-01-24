@@ -3,10 +3,6 @@
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import Navbar from '@/components/layout/Navbar.astro';
 import Footer from '@/components/layout/Footer.astro';
-import { getSiteConfig } from '@/lib/config';
-
-// 获取站点配置
-const siteConfig = getSiteConfig();
 
 // 获取搜索关键词
 const { searchParams } = Astro.url;
@@ -71,7 +67,7 @@ const query = searchParams.get('q') || '';
   };
 
   // UI模板函数
-  const getEmptyResultsTemplate = (query) => `
+  const getEmptyResultsTemplate = (query: string) => `
     <div class="text-center py-10">
       <p class="text-lg text-muted-foreground">没有找到含有"${query}"的文章</p>
       <div class="mt-4">
@@ -82,7 +78,7 @@ const query = searchParams.get('q') || '';
     </div>
   `;
 
-  const getErrorTemplate = (errorMessage) => `
+  const getErrorTemplate = (errorMessage: string) => `
     <div class="text-center py-10">
       <p class="text-lg text-muted-foreground">搜索出现错误，请稍后再试</p>
       <p class="mt-2 text-sm text-muted-foreground">${errorMessage}</p>
@@ -94,7 +90,18 @@ const query = searchParams.get('q') || '';
     </div>
   `;
 
-  const getArticleTemplate = (result) => `
+  interface PagefindData {
+    url: string;
+    excerpt: string;
+    meta: {
+      title: string;
+      description?: string;
+      date?: string;
+      tags?: string;
+    };
+  }
+
+  const getArticleTemplate = (result: PagefindData) => `
     <a href="${result.url}" class="group">
       <div class="relative overflow-hidden rounded-lg border bg-background p-5 transition-all hover:shadow-md">
         <div class="flex flex-col md:flex-row md:items-start gap-4">
@@ -121,7 +128,7 @@ const query = searchParams.get('q') || '';
             
             ${result.meta.tags ? `
               <div class="mt-3 flex flex-wrap gap-2">
-                ${result.meta.tags.split(',').map(tag => `
+                ${result.meta.tags.split(',').map((tag: string) => `
                   <a 
                     href="/tags/${tag.trim()}"
                     class="inline-flex items-center text-xs bg-muted px-2 py-1 rounded-md hover:bg-muted/80"
@@ -149,12 +156,12 @@ const query = searchParams.get('q') || '';
       }
     },
     
-    add: (query) => {
+    add: (query: string) => {
       if (!query.trim()) return;
       
       try {
         const history = searchHistory.get();
-        const filteredHistory = history.filter(item => item !== query);
+        const filteredHistory = history.filter((item: string) => item !== query);
         const newHistory = [query, ...filteredHistory].slice(0, 10);
         localStorage.setItem('searchHistory', JSON.stringify(newHistory));
       } catch (error) {
@@ -165,6 +172,16 @@ const query = searchParams.get('q') || '';
 
   document.addEventListener('DOMContentLoaded', performSearch);
   
+  interface PagefindResult {
+    data: () => Promise<PagefindData>;
+  }
+
+  declare global {
+    interface Window {
+      pagefind?: any;
+    }
+  }
+
   async function performSearch() {
     const urlParams = new URLSearchParams(window.location.search);
     const query = urlParams.get('q') || '';
@@ -203,7 +220,7 @@ const query = searchParams.get('q') || '';
       const search = await pagefind.search(query);
       
       const results = await Promise.all(
-        search.results.map(async (result) => {
+        search.results.map(async (result: PagefindResult) => {
           const data = await result.data();
           return data;
         })

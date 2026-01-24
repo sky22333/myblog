@@ -22,7 +22,7 @@ const socialMedia = siteConfig.getSocialMedia();
           {socialMedia.map(({ platform, url, icon: Icon }) => (
             Icon && (
               <a 
-                href={platform === 'email' ? `mailto:${url}` : url} 
+                href={platform === 'email' ? `mailto:${url as string}` : url as string} 
                 target="_blank" 
                 rel="noopener noreferrer" 
                 class="text-muted-foreground hover:text-foreground"

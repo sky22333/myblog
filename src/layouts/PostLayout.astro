@@ -119,7 +119,7 @@ const breadcrumbItems = [
           width="1200"
           height="630"
           class="w-full h-auto object-cover will-change-transform transform-gpu"
-          onerror="this.onerror=null; this.src='/images/default-post.jpg';"
+          data-fallback="/images/default-post.jpg"
           loading="lazy"
           decoding="async"
         />
@@ -186,7 +186,9 @@ function setupCodeBlockCopyButtons() {
   
   codeBlocks.forEach(pre => {
     // 确保代码块有相对定位，以便正确放置复制按钮
-    pre.style.position = 'relative';
+    if (pre instanceof HTMLElement) {
+      pre.style.position = 'relative';
+    }
     
     const code = pre.querySelector('code');
     if (!code) return;

@@ -1,6 +1,6 @@
 ---
 // 基础布局组件，用于包装所有页面
-import { ViewTransitions } from 'astro:transitions';
+import { ClientRouter } from 'astro:transitions';
 import '../styles/global.css';
 import BackToTop from '@/components/ui/back-to-top/BackToTop';
 import { getSiteConfig } from '@/lib/config';
@@ -135,10 +135,24 @@ if (!pageStructuredData) {
     </script>
     
     <!-- 结构化数据 -->
-    <script type="application/ld+json" set:html={JSON.stringify(pageStructuredData)} />
+    <script is:inline type="application/ld+json" set:html={JSON.stringify(pageStructuredData)} />
     
     <!-- 启用视图过渡动画 -->
-    <ViewTransitions />
+    <ClientRouter />
+
+    <!-- 全局图片错误处理 -->
+    <script is:inline>
+      document.addEventListener('error', (e) => {
+        const target = e.target;
+        if (target instanceof HTMLImageElement && target.dataset.fallback) {
+          if (target.src !== target.dataset.fallback) {
+            target.src = target.dataset.fallback;
+            target.style.opacity = '1';
+            target.removeAttribute('data-fallback');
+          }
+        }
+      }, true);
+    </script>
     
     <!-- 其他头部内容 -->
     <slot name="head" />

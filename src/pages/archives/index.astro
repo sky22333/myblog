@@ -3,31 +3,33 @@
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import Navbar from '@/components/layout/Navbar.astro';
 import Footer from '@/components/layout/Footer.astro';
-import { getCollection } from 'astro:content';
+import { getCollection, type CollectionEntry } from 'astro:content';
 
 // 获取所有非草稿状态的文章
 const posts = await getCollection('posts', ({ data }) => {
   return !data.draft;
 });
 
-// 按年份和月份归档文章
-const archiveMap = new Map();
+type Post = CollectionEntry<'posts'>;
 
-posts.forEach(post => {
+// 按年份和月份归档文章
+const archiveMap = new Map<number, Map<number, Post[]>>();
+
+posts.forEach((post) => {
   const date = post.data.pubDate;
   const year = date.getFullYear();
   const month = date.getMonth() + 1;
   
   if (!archiveMap.has(year)) {
-    archiveMap.set(year, new Map());
+    archiveMap.set(year, new Map<number, Post[]>());
   }
   
-  const yearMap = archiveMap.get(year);
+  const yearMap = archiveMap.get(year)!;
   if (!yearMap.has(month)) {
     yearMap.set(month, []);
   }
   
-  yearMap.get(month).push(post);
+  yearMap.get(month)!.push(post);
 });
 
 // 转换为排序后的数组
@@ -53,7 +55,7 @@ const archives = Array.from(archiveMap.entries())
 const totalPosts = posts.length;
 
 // 获取月份名称
-function getMonthName(month) {
+function getMonthName(month: number) {
   const monthNames = ["一月", "二月", "三月", "四月", "五月", "六月", "七月", "八月", "九月", "十月", "十一月", "十二月"];
   return monthNames[month - 1];
 }
@@ -72,7 +74,7 @@ function getMonthName(month) {
       </div>
       
       <div class="max-w-4xl mx-auto">
-        {archives.map((yearData, yearIndex) => (
+        {archives.map((yearData) => (
           <div class="mb-16 last:mb-0 relative">
             <!-- 年份标记 -->
             <div class="sticky top-4 z-10 mb-8 flex justify-center">
@@ -83,7 +85,7 @@ function getMonthName(month) {
             
             <!-- 月份和文章 -->
             <div class="grid grid-cols-1 gap-6 md:gap-8">
-              {yearData.months.map((monthData, monthIndex) => (
+              {yearData.months.map((monthData) => (
                 <div class="col-span-1 ring-1 ring-border/30 bg-card rounded-xl overflow-hidden shadow-xl backdrop-blur-sm hover:shadow-lg transition-all duration-300">
                   <!-- 月份标记 -->
                   <div class="bg-primary/10 border-b border-b-primary/10 px-4 py-2.5 flex justify-between items-center">
@@ -98,14 +100,10 @@ function getMonthName(month) {
                     </span>
                   </div>
                   
-                  <!-- 文章列表 -->
-                  <ul class="divide-y divide-border/30">
-                    {monthData.posts.map((post, postIndex) => (
-                      <li class="group">
-                        <a 
-                          href={`/posts/${post.slug}`}
-                          class="block p-4 hover:bg-muted/30 transition-colors"
-                        >
+                  <div class="p-4 md:p-6">
+                    <div class="space-y-6">
+                      {monthData.posts.map((post) => (
+                        <article class="group relative pl-4 border-l-2 border-border hover:border-primary transition-colors duration-300">
                           <div class="flex items-start gap-3">
                             <!-- 日期标记 -->
                             <div class="flex-shrink-0 flex flex-col items-center justify-center w-12 h-12 bg-primary/5 text-foreground rounded-lg overflow-hidden">
@@ -143,10 +141,10 @@ function getMonthName(month) {
                               )}
                             </div>
                           </div>
-                        </a>
-                      </li>
-                    ))}
-                  </ul>
+                        </article>
+                      ))}
+                    </div>
+                  </div>
                 </div>
               ))}
             </div>

@@ -11,14 +11,15 @@ export function cn(...inputs: ClassValue[]) {
 /**
  * 格式化日期函数
  * @param date 日期对象
+ * @param options 日期格式化选项
  * @returns 格式化后的日期字符串
  */
-export function formatDate(date: Date): string {
-  return new Date(date).toLocaleDateString('zh-CN', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-  });
+export function formatDate(date: Date, locale: string = 'zh-CN', options: Intl.DateTimeFormatOptions = {
+  year: 'numeric',
+  month: 'long',
+  day: 'numeric',
+}): string {
+  return new Date(date).toLocaleDateString(locale, options);
 }
 
 /**

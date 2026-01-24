@@ -9,9 +9,6 @@ import { getSiteConfig } from '@/lib/config';
 const siteConfig = getSiteConfig();
 // 从配置文件获取友链数据
 const friends = siteConfig.friendLinks;
-
-// 页面头图
-const headerImage = "/images/friends-header.jpg";
 ---
 
 <BaseLayout title={siteConfig.friendsPageSettings.title}>
@@ -44,7 +41,7 @@ const headerImage = "/images/friends-header.jpg";
                     alt={friend.name}
                     class="h-full w-full object-cover"
                     loading="lazy"
-                    onerror="this.src='https://api.dicebear.com/6.x/identicon/svg?seed=fallback'"
+                    data-fallback="https://api.dicebear.com/6.x/identicon/svg?seed=fallback"
                   />
                 </div>
                 

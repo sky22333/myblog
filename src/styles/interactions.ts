@@ -13,7 +13,6 @@ export const hoverEffect = (
 ): Record<string, any> => {
   // 默认过渡时间
   const duration = options.duration || 300;
-  const baseTransition = `transition-all duration-${duration}`;
   
   // 基础样式
   const baseStyle = {

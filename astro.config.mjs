@@ -39,7 +39,7 @@ export default defineConfig({
       gfm: true,
     }),
     tailwind({
-      config: { path: './tailwind.config.mjs' },
+      configFile: './tailwind.config.mjs',
       applyBaseStyles: false,
     }),
     // 站点地图生成
@@ -47,6 +47,7 @@ export default defineConfig({
       filter: (page) => !page.includes('/_'), // 过滤掉内部页面
       changefreq: 'weekly',
       lastmod: new Date(),
+      // @ts-ignore
       serialize(item) {
         // 自定义优先级 - 首页和文章列表页优先级高
         if (item.url === 'https://www.52013120.xyz/') {
@@ -59,6 +60,7 @@ export default defineConfig({
           return {
             ...item,
             priority: 0.8, // 文章页优先级
+            // @ts-ignore
             changefreq: 'monthly',
           };
         }
@@ -92,12 +94,7 @@ export default defineConfig({
     
     // Pagefind搜索集成 - 将在构建时生成搜索索引
     pagefind({
-      exclude: [
-        // 排除一些不需要搜索的页面
-        "/_*", // 排除以_开头的路径
-        "**/admin/**", // 排除admin路径
-        "/api/*" // 排除API路径
-      ],
+      // @ts-ignore
       excludeSelectors: [
         // 排除这些元素中的内容不被索引
         "nav", 
@@ -118,6 +115,7 @@ export default defineConfig({
           language: "zh-cn",
           searchWithDiacritics: false, // 中文不需要音调符号搜索
           splittingStrategy: "forward", // 向前分词策略：对中文更友好
+          /** @param {string} text */
           customSegmenter: (text) => {
             // 基础的中文分词 - 按每个字符拆分
             const segments = [];
@@ -136,17 +134,18 @@ export default defineConfig({
         }
       ],
       // 自定义过滤器和排序，提升搜索质量
+      /** @param {any} indexData */
       filterOutput: (indexData) => {
         for (const entry of indexData.data) {
           // 修正标题、内容和URL
           if (entry.filters?.length) {
-            entry.filters = entry.filters.map(filter => {
+            entry.filters = entry.filters.map(/** @param {any} filter */ (filter) => {
               // 确保标签名称是人类可读的
               if (filter.key === "tags") {
                 return { 
                   ...filter,
                   // 标签格式化为首字母大写
-                  value: filter.value.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase())
+                  value: filter.value.replace(/-/g, ' ').replace(/\b\w/g, /** @param {string} l */ (l) => l.toUpperCase())
                 };
               }
               return filter;
@@ -191,8 +190,6 @@ export default defineConfig({
   
   // 构建选项
   build: {
-    // 启用视图过渡动画
-    viewTransition: true,
     assets: 'assets',
   },
   

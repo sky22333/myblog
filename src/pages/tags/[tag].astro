@@ -56,7 +56,7 @@ posts.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
                         src={post.data.cover} 
                         alt={post.data.title}
                         class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
-                        onerror="this.onerror=null; this.src='/images/default-post.jpg';"
+                        data-fallback="/images/default-post.jpg"
                       />
                     </div>
                   )}

@@ -1,7 +1,7 @@
 ---
 // 文章详情页面
 // 显示单篇文章的内容
-import { getCollection, getEntry } from 'astro:content';
+import { getCollection, getEntry, type CollectionEntry } from 'astro:content';
 import PostLayout from '@/layouts/PostLayout.astro';
 import { calculateReadingTime } from '@/lib/utils';
 
@@ -28,11 +28,16 @@ const { Content } = await post.render();
 
 // 获取作者信息
 let authorName = post.data.author || "未知作者";
-let author = {
+
+// 定义作者数据类型，兼容 CollectionEntry<'authors'>['data']
+type AuthorData = CollectionEntry<'authors'>['data'];
+
+// 创建一个包含 data 属性的对象，模拟 CollectionEntry 结构
+let author: { data: AuthorData } = {
   data: {
     name: authorName,
     bio: "博客作者",
-    avatar: null
+    avatar: undefined
   }
 };
 

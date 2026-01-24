@@ -49,4 +49,4 @@ const breadcrumbData = generateBreadcrumbStructuredData(items, siteConfig.siteUr
 </nav>
 
 <!-- 结构化数据 -->
-<script type="application/ld+json" set:html={JSON.stringify(breadcrumbData)} /> 
+<script is:inline type="application/ld+json" set:html={JSON.stringify(breadcrumbData)} /> 

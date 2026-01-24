@@ -39,7 +39,7 @@ const postsCollection = defineCollection({
 
 // 作者集合的模式定义
 const authorsCollection = defineCollection({
-  type: 'content',
+  type: 'data',
   schema: z.object({
     // 作者名称
     name: z.string(),
