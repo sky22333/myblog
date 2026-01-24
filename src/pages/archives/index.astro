@@ -103,10 +103,10 @@ function getMonthName(month: number) {
                   <div class="p-4 md:p-6">
                     <div class="space-y-6">
                       {monthData.posts.map((post) => (
-                        <article class="group relative pl-4 border-l-2 border-border hover:border-primary transition-colors duration-300">
-                          <div class="flex items-start gap-3">
+                        <article class="group relative transition-colors duration-300">
+                          <a href={`/posts/${post.slug}`} class="flex items-start gap-3 py-2">
                             <!-- 日期标记 -->
-                            <div class="flex-shrink-0 flex flex-col items-center justify-center w-12 h-12 bg-primary/5 text-foreground rounded-lg overflow-hidden">
+                            <div class="flex-shrink-0 flex flex-col items-center justify-center w-12 h-12 bg-primary/5 text-foreground rounded-lg overflow-hidden group-hover:bg-primary/10 transition-colors">
                               <span class="text-xs font-medium">
                                 {post.data.pubDate.toLocaleDateString('zh-CN', {
                                   month: 'short'
@@ -117,7 +117,7 @@ function getMonthName(month: number) {
                               </span>
                             </div>
                             
-                            <div class="flex-1 min-w-0">
+                            <div class="flex-1 min-w-0 py-1">
                               <!-- 文章标题 -->
                               <h4 class="text-base font-medium text-foreground group-hover:text-primary transition-colors line-clamp-1">
                                 {post.data.title}
@@ -127,20 +127,20 @@ function getMonthName(month: number) {
                               {post.data.tags && post.data.tags.length > 0 && (
                                 <div class="flex flex-wrap gap-1.5 mt-2">
                                   {post.data.tags.slice(0, 3).map((tag) => (
-                                    <span class="inline-flex items-center text-xs text-muted-foreground">
+                                    <span class="inline-flex items-center text-xs text-muted-foreground bg-secondary/30 px-1.5 py-0.5 rounded-sm">
                                       <span class="h-1.5 w-1.5 rounded-full bg-primary/70 mr-1"></span>
                                       {tag}
                                     </span>
                                   ))}
                                   {post.data.tags.length > 3 && (
-                                    <span class="text-xs text-muted-foreground">
+                                    <span class="text-xs text-muted-foreground self-center">
                                       +{post.data.tags.length - 3}
                                     </span>
                                   )}
                                 </div>
                               )}
                             </div>
-                          </div>
+                          </a>
                         </article>
                       ))}
                     </div>
