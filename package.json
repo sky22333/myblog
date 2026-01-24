@@ -16,6 +16,7 @@
     "@fontsource/long-cang": "^5.2.8",
     "@types/react": "^18.2.45",
     "@types/react-dom": "^18.2.18",
+    "nprogress": "^0.2.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-icons": "^5.5.0"
@@ -29,6 +30,7 @@
     "@pagefind/default-ui": "^1.3.0",
     "@tailwindcss/typography": "^0.5.19",
     "@types/node": "^20.10.4",
+    "@types/nprogress": "^0.2.3",
     "astro": "^5.7.5",
     "astro-pagefind": "^1.8.3",
     "astro-robots-txt": "^1.0.0",
