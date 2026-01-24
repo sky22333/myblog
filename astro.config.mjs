@@ -17,6 +17,10 @@ import rehypeAutolinkHeadings from 'rehype-autolink-headings';
 export default defineConfig({
   site: 'https://www.52013120.xyz',
   
+  // 开启HTML压缩
+  compressHTML: true,
+  
+
   // 集成插件
   integrations: [
     // React集成
