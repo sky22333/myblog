@@ -1,8 +1,6 @@
 name: 部署到 GitHub Pages
 
 on:
-  push:
-    branches: [ main ]
   workflow_dispatch:
 
 permissions:
